@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark: #050505;
+  --accent: #7c3aed;
+  --accent-light: #a78bfa;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  cursor: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: white;
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.9);
+  border-radius: 10px;
+  border: 2px solid #050505;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 1);
+}
+
+.glass-morphism {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.text-gradient .char {
+  color: #a78bfa;
+  /* Fallback */
+  position: relative;
+  z-index: 10;
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .text-gradient .char {
+    background: linear-gradient(to bottom right, #ffffff, #c4b5fd, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+}
+
+/* Grain Overlay */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: none;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.15;
+  filter: contrast(150%) brightness(100%);
+}
+
+#custom-cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: opacity 0.3s ease;
+}
+
+#custom-cursor-follower {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1),
+    width 0.3s ease,
+    height 0.3s ease,
+    border-width 0.3s ease;
+}
+
+#custom-cursor-follower.cursor-hover {
+  width: 60px;
+  height: 60px;
+  border-width: 2px;
+}
+
+.magnetic-area {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  z-index: -1;
+}
+
+[data-animation="split-text"] {
+  display: block;
+  overflow: hidden;
+}
+
+[data-animation="split-text"] .char {
+  display: inline-block;
+}
