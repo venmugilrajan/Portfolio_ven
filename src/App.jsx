@@ -430,7 +430,7 @@ const Hero = ({ id }) => {
           <Magnetic><a href="https://github.com/venmugilrajan" target="_blank"><Github size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
           <Magnetic><a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank"><Linkedin size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
           <Magnetic><a href="https://leetcode.com/u/Venmugilrajans/" target="_blank"><Code2 size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
-          <Magnetic><a href="https://mail.google.com/mail/u/0/?fs=1&to=venmugilrajan@gmail.com&tf=cm" target="_blank" ><Mail size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
+          <Magnetic><a href="https://mail.google.com/mail/u/0/?fs=1&to=venmugilrajans@gmail.com&tf=cm" target="_blank" ><Mail size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
       </div>
     </section>
   );
@@ -548,7 +548,7 @@ const Footer = () => {
                 </h2>
                 <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
                     <Magnetic strength={0.3}>
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajan@gmail.com" target="_blank" className="px-16 py-6 bg-white text-black font-black text-xl rounded-full hover:scale-105 transition-transform flex items-center gap-4">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajans@gmail.com" target="_blank" className="px-16 py-6 bg-white text-black font-black text-xl rounded-full hover:scale-105 transition-transform flex items-center gap-4">
                             SAY HI <Mail size={24} strokeWidth={3} />
                         </a>
                     </Magnetic>
@@ -566,7 +566,7 @@ const Footer = () => {
                     <a href="https://github.com/venmugilrajan" target="_blank" className="hover:text-white transition-colors">GITHUB</a>
                     <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" className="hover:text-white transition-colors">LINKEDIN</a>
                     <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" className="hover:text-white transition-colors">LEETCODE</a>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajan@gmail.com" target="_blank" className="hover:text-white transition-colors">EMAIL</a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajans@gmail.com" target="_blank" className="hover:text-white transition-colors">EMAIL</a>
                 </div>
             </div>
         </footer>
