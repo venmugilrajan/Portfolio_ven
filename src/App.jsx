@@ -11,6 +11,7 @@ import profileImg from './Gemini_Generated_Image_xuuob3xuuob3xuuo.png';
 import faceImg from './face.png';
 import digitImg from './digit.png';
 import rewardImg from './reward.jpg';
+import FluidGlass from './FluidGlass';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -304,8 +305,20 @@ const App = () => {
           </div>
         </section>
 
-        <section id="projects">
-          <h2 className="text-[15vw] font-black opacity-[0.15] select-none tracking-tighter text-center leading-none" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.1)" }}>FEATURED WORK</h2>
+        <section id="projects" className="relative">
+          <div className="h-[600px] w-full relative">
+            <FluidGlass 
+              text="FEATURED WORK"
+              mode="lens"
+              lensProps={{
+                scale: 0.25,
+                ior: 1.15,
+                thickness: 2,
+                chromaticAberration: 0.05,
+                anisotropy: 0.01
+              }}
+            />
+          </div>
           
           <ParallaxSection 
             number="01"
