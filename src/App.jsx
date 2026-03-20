@@ -10,6 +10,7 @@ import TiltedCard from './TiltedCard';
 import profileImg from './Gemini_Generated_Image_xuuob3xuuob3xuuo.png';
 import faceImg from './face.png';
 import digitImg from './digit.png';
+import rewardImg from './reward.jpg';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -332,6 +333,16 @@ const App = () => {
             image={digitImg}
             speed={0.15}
             link="https://github.com/venmugilrajan/DIGIT_RECOGNIZER_CNN"
+          />
+
+          <ParallaxSection 
+            number="04"
+            title="Student Reward Site"
+            subtitle="A comprehensive platform designed for tracking and managing student rewards and achievements."
+            image={rewardImg}
+            speed={-0.05}
+            link="https://github.com/venmugilrajan/Student_Reward_Site"
+            reverse
           />
         </section>
 
