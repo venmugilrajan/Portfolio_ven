@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 import * as THREE from 'three';
-import { useRef, useState, useEffect, memo } from 'react';
+import { useRef, useState, useEffect, memo, Suspense } from 'react';
 import { Canvas, createPortal, useFrame, useThree } from '@react-three/fiber';
 import {
   useFBO,
@@ -30,16 +30,18 @@ export default function FluidGlass({ mode = 'lens', lensProps = {}, barProps = {
 
   return (
     <Canvas camera={{ position: [0, 0, 20], fov: 15 }} gl={{ alpha: true }}>
-      <ScrollControls damping={0.2} pages={1} distance={0.4}>
-        {mode === 'bar' && <NavItems items={navItems} />}
-        <Wrapper modeProps={modeProps}>
-          <Scroll>
-            <Typography text={text} />
-          </Scroll>
-          <Scroll html />
-          <Preload />
-        </Wrapper>
-      </ScrollControls>
+      <Suspense fallback={null}>
+        <ScrollControls damping={0.2} pages={1} distance={0.4}>
+          {mode === 'bar' && <NavItems items={navItems} />}
+          <Wrapper modeProps={modeProps}>
+            <Scroll>
+              <Typography text={text} />
+            </Scroll>
+            <Scroll html />
+            <Preload />
+          </Wrapper>
+        </ScrollControls>
+      </Suspense>
     </Canvas>
   );
 }
@@ -61,10 +63,12 @@ const ModeWrapper = memo(function ModeWrapper({
   const geoWidthRef = useRef(1);
 
   useEffect(() => {
-    const geo = nodes[geometryKey]?.geometry;
-    if (geo) {
-      geo.computeBoundingBox();
-      geoWidthRef.current = geo.boundingBox.max.x - geo.boundingBox.min.x || 1;
+    if (nodes && nodes[geometryKey]) {
+      const geo = nodes[geometryKey].geometry;
+      if (geo) {
+        geo.computeBoundingBox();
+        geoWidthRef.current = geo.boundingBox.max.x - geo.boundingBox.min.x || 1;
+      }
     }
   }, [nodes, geometryKey]);
 
@@ -101,16 +105,18 @@ const ModeWrapper = memo(function ModeWrapper({
         <planeGeometry />
         <meshBasicMaterial map={buffer.texture} transparent />
       </mesh>
-      <mesh ref={ref} scale={scale ?? 0.25} rotation-x={Math.PI / 2} geometry={nodes[geometryKey]?.geometry} {...props}>
-        <MeshTransmissionMaterial
-          buffer={buffer.texture}
-          ior={ior ?? 1.15}
-          thickness={thickness ?? 5}
-          anisotropy={anisotropy ?? 0.01}
-          chromaticAberration={chromaticAberration ?? 0.1}
-          {...extraMat}
-        />
-      </mesh>
+      {nodes && nodes[geometryKey] && (
+        <mesh ref={ref} scale={scale ?? 0.25} rotation-x={Math.PI / 2} geometry={nodes[geometryKey].geometry} {...props}>
+          <MeshTransmissionMaterial
+            buffer={buffer.texture}
+            ior={ior ?? 1.15}
+            thickness={thickness ?? 5}
+            anisotropy={anisotropy ?? 0.01}
+            chromaticAberration={chromaticAberration ?? 0.1}
+            {...extraMat}
+          />
+        </mesh>
+      )}
     </>
   );
 });
