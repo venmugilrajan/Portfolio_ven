@@ -1,6 +1,6 @@
-/* eslint-disable react/no-unknown-property */
 import * as THREE from 'three';
 import { useRef, useState, useEffect, memo, Suspense } from 'react';
+import ErrorBoundary from './ErrorBoundary';
 import { Canvas, createPortal, useFrame, useThree } from '@react-three/fiber';
 import {
   useFBO,
@@ -29,8 +29,9 @@ export default function FluidGlass({ mode = 'lens', lensProps = {}, barProps = {
   } = rawOverrides;
 
   return (
-    <Canvas camera={{ position: [0, 0, 20], fov: 15 }} gl={{ alpha: true }}>
-      <Suspense fallback={null}>
+    <ErrorBoundary fallback={<div className="h-full w-full flex items-center justify-center text-white/20 font-black text-6xl">FEATURED WORK</div>}>
+      <Canvas camera={{ position: [0, 0, 20], fov: 15 }} gl={{ alpha: true }}>
+        <Suspense fallback={null}>
         <ScrollControls damping={0.2} pages={1} distance={0.4}>
           {mode === 'bar' && <NavItems items={navItems} />}
           <Wrapper modeProps={modeProps}>
@@ -43,6 +44,7 @@ export default function FluidGlass({ mode = 'lens', lensProps = {}, barProps = {
         </ScrollControls>
       </Suspense>
     </Canvas>
+    </ErrorBoundary>
   );
 }
 
@@ -91,9 +93,6 @@ const ModeWrapper = memo(function ModeWrapper({
     gl.setRenderTarget(buffer);
     gl.render(scene, camera);
     gl.setRenderTarget(null);
-
-    // Background Color matches project theme
-    gl.setClearColor(0x020202, 1);
   });
 
   const { scale, ior, thickness, anisotropy, chromaticAberration, ...extraMat } = modeProps;
