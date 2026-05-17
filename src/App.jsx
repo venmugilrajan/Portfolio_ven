@@ -341,7 +341,8 @@ const App = () => {
             subtitle="A comprehensive platform designed for tracking and managing student rewards and achievements."
             image={rewardImg}
             speed={-0.05}
-            link="https://github.com/venmugilrajan/Student_Reward_Site"
+            link="https://venmugilrajan-student-reward-points.hf.space/"
+            buttonLabel="VIEW WEBSITE"
             reverse
           />
         </section>
@@ -498,7 +499,7 @@ const PinnedSection = ({ title, description, image, reverse = false }) => {
   );
 };
 
-const ParallaxSection = ({ number, title, subtitle, image, speed, link = "#", reverse = false, objectPosition = "center" }) => {
+const ParallaxSection = ({ number, title, subtitle, image, speed, link = "#", reverse = false, objectPosition = "center", buttonLabel = "VIEW REPO" }) => {
   const sectionRef = useRef(null);
 
   return (
@@ -514,7 +515,7 @@ const ParallaxSection = ({ number, title, subtitle, image, speed, link = "#", re
             rel="noopener noreferrer"
             className="inline-flex items-center gap-6 group cursor-pointer border border-white/20 px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-500"
           >
-            <span className="text-sm font-black tracking-[0.2em] uppercase">VIEW REPO</span>
+            <span className="text-sm font-black tracking-[0.2em] uppercase">{buttonLabel}</span>
             <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </a>
         </Magnetic>
