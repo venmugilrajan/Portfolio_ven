@@ -238,6 +238,7 @@ export default function App() {
   };
 
   const isDark = page === 'work' || page === 'experience';
+  const isLeftDark = isDark || (page === 'home' && isOpened);
 
   return (
     <div className={`min-h-screen relative font-karla transition-colors duration-700 ${isDark ? 'theme-dark' : 'bg-background text-darkBackground'}`}>
@@ -253,43 +254,122 @@ export default function App() {
             setIsOpened(false);
             navigateTo('home');
           }}
-          className="text-2xl font-pacifico font-bold tracking-tight cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity"
+          className={`text-2xl font-pacifico font-bold tracking-tight cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity ${isLeftDark ? 'text-white' : 'text-black'}`}
         >
           VR
         </div>
 
-        {/* Back Navigation Arrow */}
-        <AnimatePresence>
-          {page !== 'home' && (
-            <motion.button
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              onClick={() => navigateTo('home')}
-              className={`p-3 rounded-full border border-current pointer-events-auto hover:bg-current hover:text-white transition-all flex items-center justify-center`}
-              aria-label="Back to home"
+        {/* Navigation / Back Arrow in Center Header */}
+        <div className="flex items-center gap-4 pointer-events-auto">
+          {/* Experience link on mobile home page */}
+          {page === 'home' && (
+            <button
+              onClick={() => navigateTo('experience')}
+              className={`text-[10px] font-bold uppercase tracking-[0.3em] font-mono hover:opacity-50 transition-opacity md:hidden ${isOpened ? 'text-white' : 'text-black'}`}
             >
-              <ArrowLeft size={18} />
-            </motion.button>
+              Experience
+            </button>
           )}
-        </AnimatePresence>
+
+          {/* Back Navigation Arrow */}
+          <AnimatePresence>
+            {page !== 'home' && (
+              <motion.button
+                key="back-button"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                onClick={() => navigateTo('home')}
+                className={`p-3 rounded-full border border-current hover:bg-current hover:text-white transition-all flex items-center justify-center`}
+                aria-label="Back to home"
+              >
+                <ArrowLeft size={18} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
 
         <a 
           href="mailto:venmugilrajans@gmail.com" 
-          className="text-xs font-bold uppercase tracking-[0.2em] pointer-events-auto hover:opacity-50 transition-opacity"
+          className={`text-xs font-bold uppercase tracking-[0.2em] pointer-events-auto hover:opacity-50 transition-opacity ${isDark ? 'text-white' : 'text-black'}`}
         >
           Say hi..
         </a>
       </header>
 
-      {/* Social Sidebar */}
-      <div className="fixed bottom-8 left-8 hidden md:flex flex-col gap-6 z-50 items-center">
-        <div className="w-[1px] h-20 bg-current opacity-30" />
-        <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Github size={16} /></a>
-        <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Linkedin size={16} /></a>
-        <a href="mailto:venmugilrajans@gmail.com" className="hover:opacity-60 transition-opacity"><Mail size={16} /></a>
-        <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Code2 size={16} /></a>
-      </div>
+      {/* Left Sidebar Nav & Socials (Homepage only) */}
+      {page === 'home' && (
+        <div className={`fixed left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-8 md:gap-12 z-50 ${isLeftDark ? 'text-white' : 'text-black'}`}>
+          <div className="flex flex-col items-center gap-12 md:gap-20 text-[10px] font-bold uppercase tracking-[0.3em] font-mono">
+            {/* Experience (desktop only - on mobile it moves to header) */}
+            <button 
+              onClick={() => navigateTo('experience')} 
+              className="hover:opacity-50 transition-opacity -rotate-90 origin-center my-4 hidden md:block"
+            >
+              Experience
+            </button>
+            
+            {/* Projects (always on left sidebar) */}
+            <button 
+              onClick={() => navigateTo('work')} 
+              className="hover:opacity-50 transition-opacity -rotate-90 origin-center my-4"
+            >
+              Projects
+            </button>
+          </div>
+          
+          {/* Social Icons */}
+          <div className="flex flex-col items-center gap-4 md:gap-6 mt-4">
+            <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Github size={14} /></a>
+            <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Linkedin size={14} /></a>
+            <a href="mailto:venmugilrajans@gmail.com" className="hover:opacity-60 transition-opacity"><Mail size={14} /></a>
+            <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Code2 size={14} /></a>
+            <div className="w-[1px] h-12 md:h-20 bg-current opacity-30 mt-2" />
+          </div>
+        </div>
+      )}
+
+      {/* Right Sidebar Nav (Homepage only) */}
+      {page === 'home' && (
+        <div className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-12 z-50 text-black">
+          <button 
+            onClick={() => navigateTo('feats')} 
+            className="hover:opacity-50 transition-opacity rotate-90 origin-center my-4 text-[10px] font-bold uppercase tracking-[0.3em] font-mono"
+          >
+            Feats
+          </button>
+          <div className="w-[1px] h-12 md:h-20 bg-black opacity-30 mt-4" />
+        </div>
+      )}
+
+      {/* Bottom Nav Links (Homepage only) */}
+      {page === 'home' && (
+        <div className="fixed bottom-8 left-4 md:left-8 right-4 md:right-8 flex justify-between text-[10px] font-bold uppercase tracking-[0.3em] font-mono z-50 pointer-events-none">
+          <button 
+            onClick={() => setIsOpened(!isOpened)} 
+            className={`pointer-events-auto hover:opacity-50 transition-opacity ${isOpened ? 'text-white' : 'text-black'}`}
+          >
+            About
+          </button>
+          <button 
+            onClick={() => navigateTo('skills')} 
+            className="pointer-events-auto hover:opacity-50 transition-opacity text-black"
+          >
+            My Skills
+          </button>
+        </div>
+      )}
+
+      {/* Social Sidebar (only on subpages) */}
+      {page !== 'home' && (
+        <div className={`fixed bottom-8 left-8 hidden md:flex flex-col gap-6 z-50 items-center ${isLeftDark ? 'text-white' : 'text-black'}`}>
+          <div className="w-[1px] h-20 bg-current opacity-30" />
+          <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Github size={16} /></a>
+          <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Linkedin size={16} /></a>
+          <a href="mailto:venmugilrajans@gmail.com" className="hover:opacity-60 transition-opacity"><Mail size={16} /></a>
+          <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Code2 size={16} /></a>
+        </div>
+      )}
 
       {/* Main Content Router */}
       <main className="min-h-screen w-full flex items-center justify-center overflow-hidden">
@@ -327,17 +407,21 @@ export default function App() {
                 />
               </div>
 
-              {/* Close split-screen center arrow */}
-              {isOpened && (
-                <motion.button
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  onClick={() => setIsOpened(false)}
-                  className="absolute top-24 left-1/2 -translate-x-1/2 p-3 rounded-full border border-black dark:border-white z-50 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                >
-                  <ArrowLeft size={18} />
-                </motion.button>
-              )}
+               {/* Close split-screen center arrow */}
+              <AnimatePresence>
+                {isOpened && (
+                  <motion.button
+                    key="close-split-button"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    onClick={() => setIsOpened(false)}
+                    className="absolute top-24 left-1/2 -translate-x-1/2 p-3 rounded-full border border-black dark:border-white z-50 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                  >
+                    <ArrowLeft size={18} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
 
               {/* Centered click target (Yin-Yang) */}
               {!isOpened && (
@@ -369,7 +453,7 @@ export default function App() {
                     className="w-11/12 max-w-4xl min-h-[450px] md:h-[450px] flex flex-col md:flex-row relative z-20 overflow-visible"
                   >
                     {/* Left half - black background with white border */}
-                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white md:border-r-0 bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10">
+                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white md:border-r-0 border-b-0 md:border-b bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10">
                       <h1 className="text-3xl md:text-5xl font-black mb-4 leading-none font-sans">
                         Hi,<br />I'm Venmugil Rajan
                       </h1>
@@ -379,29 +463,12 @@ export default function App() {
                     </div>
 
                     {/* Right half - beige background with black border */}
-                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black md:border-l-0 bg-[#FCFBF7] relative flex items-center justify-center overflow-hidden md:overflow-visible z-10">
+                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black md:border-l-0 border-t-0 md:border-t bg-[#FCFBF7] relative flex items-center justify-center overflow-hidden md:overflow-visible z-10">
                       <img 
                         src={profileImg} 
                         alt="Venmugil Rajan Profile" 
                         className="absolute bottom-0 h-[95%] md:h-[105%] w-auto object-contain select-none z-20 pointer-events-none"
                       />
-                    </div>
-                  </motion.div>
-
-                  {/* Marginalized Nav Anchors inside Open Split */}
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="absolute inset-x-8 bottom-8 flex justify-between text-[10px] font-bold uppercase tracking-[0.3em] font-mono z-30 pointer-events-auto"
-                  >
-                    <div className="flex gap-8">
-                      <button onClick={() => navigateTo('experience')} className="hover:opacity-40 transition-opacity">Experience</button>
-                      <button onClick={() => navigateTo('work')} className="hover:opacity-40 transition-opacity">Projects</button>
-                    </div>
-                    <div className="flex gap-8">
-                      <button onClick={() => navigateTo('skills')} className="hover:opacity-40 transition-opacity">My Skills</button>
-                      <button onClick={() => navigateTo('feats')} className="hover:opacity-40 transition-opacity">Feats</button>
                     </div>
                   </motion.div>
                 </div>
