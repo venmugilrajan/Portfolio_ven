@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
-import { ChevronDown, ArrowRight, ExternalLink, Instagram, Twitter, Github, Linkedin, Mail, Code2, Globe, Database, Terminal } from 'lucide-react';
+import { ChevronDown, ArrowRight, ExternalLink, Instagram, Twitter, Github, Linkedin, Mail, Code2, Globe, Database, Terminal, Menu, X } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Aurora from './Aurora';
 import DotGrid from './DotGrid';
@@ -125,9 +125,9 @@ const ScrollArrow = ({ targetId, isUp = false }) => {
       <div 
         onClick={() => {
           if (isUp) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.lenis?.scrollTo(0, { duration: 1.8 });
           } else {
-            document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+            window.lenis?.scrollTo(`#${targetId}`, { duration: 1.8 });
           }
         }}
         className={`w-16 h-16 rounded-full border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white hover:text-black transition-colors duration-500 ${isUp ? 'rotate-180' : ''}`}
@@ -178,20 +178,42 @@ const AnimatedBackground = () => (
 const App = () => {
   const cursorRef = useRef(null);
   const cursorFollowerRef = useRef(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.5,
+      duration: 1.8,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       infinite: false,
+      autoRaf: false,
     });
+    window.lenis = lenis;
 
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+    const updateLenis = (time) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(updateLenis);
 
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -231,6 +253,8 @@ const App = () => {
 
     return () => {
       lenis.destroy();
+      window.lenis = null;
+      gsap.ticker.remove(updateLenis);
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleHover);
     };
@@ -242,31 +266,94 @@ const App = () => {
       <div id="custom-cursor" ref={cursorRef} />
       <div id="custom-cursor-follower" ref={cursorFollowerRef} />
 
-      <nav className="fixed top-0 w-full z-[100] px-8 md:px-16 py-10 flex justify-between items-center mix-blend-difference">
-        <Magnetic>
-          <div 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-xl font-black tracking-tighter cursor-pointer"
-          >
-            VENMUGIL RAJAN.DEV
+      <nav className={`fixed top-0 w-full z-[100] transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-[#020202]/[0.85] backdrop-blur-md border-b border-white/[0.05] py-5 px-6 md:px-16' 
+          : 'bg-transparent py-8 md:py-10 px-8 md:px-16'
+      }`}>
+        <div className="max-w-7xl mx-auto flex justify-between items-center w-full">
+          <Magnetic>
+            <div 
+              onClick={() => window.lenis?.scrollTo(0, { duration: 1.8 })}
+              className="text-lg md:text-xl font-black tracking-tighter cursor-pointer text-white mix-blend-difference"
+            >
+              VENMUGIL RAJAN.DEV
+            </div>
+          </Magnetic>
+          
+          <div className="hidden md:flex gap-8 md:gap-16 text-[10px] font-bold tracking-[0.3em] uppercase">
+            {['About', 'Skills', 'Projects', 'Contact'].map((item) => (
+              <Magnetic key={item}>
+                <a 
+                  href={`#${item.toLowerCase()}`} 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.lenis?.scrollTo(`#${item.toLowerCase()}`, { duration: 1.8 });
+                  }}
+                  className="hover:opacity-40 transition-opacity whitespace-nowrap text-white"
+                >
+                  {item}
+                </a>
+              </Magnetic>
+            ))}
           </div>
-        </Magnetic>
-        <div className="flex gap-8 md:gap-16 text-[10px] font-bold tracking-[0.3em] uppercase">
-          {['About', 'Skills', 'Projects', 'Contact'].map((item) => (
-            <Magnetic key={item}>
-              <a 
-                href={`#${item.toLowerCase()}`} 
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="hover:opacity-40 transition-opacity whitespace-nowrap"
-              >
-                {item}
-              </a>
-            </Magnetic>
-          ))}
+
+          <div className="md:hidden flex items-center z-50">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white hover:text-violet-400 transition-colors focus:outline-none"
+              aria-label="Toggle Menu"
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-0 h-screen w-screen bg-[#020202] z-40 flex flex-col justify-between p-10 md:hidden"
+            >
+              <div className="h-10" />
+              <div className="flex flex-col gap-8 text-center mt-10">
+                {['About', 'Skills', 'Projects', 'Contact'].map((item, index) => (
+                  <motion.a
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    key={item}
+                    href={`#${item.toLowerCase()}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsMenuOpen(false);
+                      setTimeout(() => {
+                        window.lenis?.scrollTo(`#${item.toLowerCase()}`, { duration: 1.8 });
+                      }, 300);
+                    }}
+                    className="text-3xl font-black tracking-widest uppercase hover:text-violet-400 transition-colors"
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </div>
+              <div className="flex flex-col items-center gap-6 mt-auto">
+                <div className="flex gap-6 text-white/80">
+                  <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:text-violet-400 transition-colors"><Github size={20} /></a>
+                  <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:text-violet-400 transition-colors"><Linkedin size={20} /></a>
+                  <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:text-violet-400 transition-colors"><Code2 size={20} /></a>
+                  <a href="https://mail.google.com/mail/u/0/?fs=1&to=venmugilrajans@gmail.com&tf=cm" target="_blank" rel="noopener noreferrer" className="hover:text-violet-400 transition-colors"><Mail size={20} /></a>
+                </div>
+                <div className="text-[8px] tracking-[0.3em] text-white/40 uppercase text-center">
+                  © 2026 VENMUGIL RAJAN
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <Hero id="hero" />
@@ -280,9 +367,9 @@ const App = () => {
           />
         </section>
 
-        <section id="skills" className="py-40 px-8 md:px-20">
+        <section id="skills" className="py-20 md:py-40 px-6 md:px-20">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-5xl md:text-8xl font-black mb-20 tracking-tighter">TECHNICAL ARSENAL</h2>
+            <h2 className="text-4xl sm:text-5xl md:text-8xl font-black mb-10 md:mb-20 tracking-tighter">TECHNICAL ARSENAL</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <SkillCategory 
@@ -347,9 +434,9 @@ const App = () => {
           />
         </section>
 
-        <section id="expertise" className="py-40 px-8 md:px-20 border-y border-white/10">
+        <section id="expertise" className="py-20 md:py-40 px-6 md:px-20 border-y border-white/10">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-black mb-16 tracking-tighter uppercase italic">Verified Expertise</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-10 md:mb-16 tracking-tighter uppercase italic">Verified Expertise</h2>
             <div className="space-y-6">
               {[
                 { name: 'JAVA SE 17 DEVELOPER – Oracle', link: 'https://catalog-education.oracle.com/pls/certview/sharebadge?id=1D3EA450257E886F877C6A8BB1ACD3C44B36D0AA8695B836071B56AC09982A84' },
@@ -360,8 +447,8 @@ const App = () => {
               ].map((cert, i) => (
                 <Magnetic key={i} strength={0.1}>
                   <a href={cert.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between group py-6 border-b border-white/10 w-full hover:px-4 transition-all duration-500">
-                    <span className="text-2xl md:text-3xl font-bold text-white/40 group-hover:text-white transition-colors">{cert.name}</span>
-                    <ExternalLink className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
+                    <span className="text-lg sm:text-xl md:text-3xl font-bold text-white/40 group-hover:text-white transition-colors pr-4">{cert.name}</span>
+                    <ExternalLink className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all flex-shrink-0" />
                   </a>
                 </Magnetic>
               ))}
@@ -419,11 +506,11 @@ const Hero = ({ id }) => {
 
   return (
     <section id={id} ref={containerRef} className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-      <div className="z-10 text-center uppercase tracking-tighter">
+      <div className="z-10 text-center uppercase tracking-tighter px-4">
         <div className="hero-sub text-xs md:text-sm font-bold tracking-[0.8em] text-violet-300 mb-6 font-mono select-none">
           [ INITIALIZING CORE ]
         </div>
-        <h1 className="text-[13vw] font-black leading-[0.8] mb-8 relative flex flex-col items-center">
+        <h1 className="text-5xl sm:text-7xl md:text-[13vw] font-black leading-[0.9] md:leading-[0.8] mb-8 relative flex flex-col items-center">
           <SplitText className="block mb-2">VENMUGIL</SplitText>
           <SplitText className="block text-gradient">RAJAN</SplitText>
         </h1>
@@ -438,11 +525,11 @@ const Hero = ({ id }) => {
         <ScrollArrow targetId="about" />
       </div>
 
-      <div className="absolute bottom-10 left-10 md:left-20 flex gap-6 text-white/80">
-          <Magnetic><a href="https://github.com/venmugilrajan" target="_blank"><Github size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
-          <Magnetic><a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank"><Linkedin size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
-          <Magnetic><a href="https://leetcode.com/u/Venmugilrajans/" target="_blank"><Code2 size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
-          <Magnetic><a href="https://mail.google.com/mail/u/0/?fs=1&to=venmugilrajans@gmail.com&tf=cm" target="_blank" ><Mail size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
+      <div className="absolute bottom-28 md:bottom-10 left-1/2 md:left-20 -translate-x-1/2 md:translate-x-0 flex gap-6 text-white/80 z-20">
+          <Magnetic><a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer"><Github size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
+          <Magnetic><a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer"><Linkedin size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
+          <Magnetic><a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer"><Code2 size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
+          <Magnetic><a href="https://mail.google.com/mail/u/0/?fs=1&to=venmugilrajans@gmail.com&tf=cm" target="_blank" rel="noopener noreferrer"><Mail size={18} className="cursor-pointer hover:text-white" /></a></Magnetic>
       </div>
     </section>
   );
@@ -454,24 +541,15 @@ const PinnedSection = ({ title, description, image, reverse = false }) => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "top top",
-        end: "+=100%",
-        pin: true,
-        scrub: true,
-      });
-
       gsap.from(imgRef.current, {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top bottom",
-          end: "top top",
+          end: "bottom top",
           scrub: 0.5
         },
-        scale: 1.3,
-        rotate: reverse ? -2 : 2,
-        filter: "brightness(0.7) blur(4px)",
+        scale: 1.1,
+        rotate: reverse ? -1 : 1,
         force3D: true
       });
     }, containerRef);
@@ -480,17 +558,17 @@ const PinnedSection = ({ title, description, image, reverse = false }) => {
   }, [reverse]);
 
   return (
-    <section ref={containerRef} className="h-screen flex items-center justify-center relative overflow-hidden px-10">
-      <div className={`w-full max-w-7xl flex flex-col md:flex-row items-center gap-20 ${reverse ? 'md:flex-row-reverse' : ''}`}>
+    <section ref={containerRef} className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-6 md:px-10">
+      <div className={`w-full max-w-7xl flex flex-col md:flex-row items-center gap-12 md:gap-20 ${reverse ? 'md:flex-row-reverse' : ''}`}>
         <div className="w-full md:w-1/2">
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.8]">{title}</h2>
-          <p className="text-xl md:text-2xl text-white/60 max-w-md leading-relaxed font-light">{description}</p>
+          <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] md:leading-[0.8]">{title}</h2>
+          <p className="text-lg sm:text-xl md:text-2xl text-white/60 max-w-md leading-relaxed font-light">{description}</p>
         </div>
-        <div className="w-full md:w-1/2 aspect-square relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-4">
+        <div className="w-full md:w-1/2 aspect-square relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-4 max-w-md md:max-w-none">
           <img 
             ref={imgRef}
             src={image} 
-            className="w-full h-full object-cover rounded-2xl transition-all duration-700 [will-change:transform,filter]"
+            className="w-full h-full object-cover rounded-2xl transition-all duration-700 [will-change:transform]"
             alt={title}
           />
         </div>
@@ -503,11 +581,11 @@ const ParallaxSection = ({ number, title, subtitle, image, speed, link = "#", re
   const sectionRef = useRef(null);
 
   return (
-    <section ref={sectionRef} className={`relative min-h-[80vh] py-32 px-8 md:px-20 flex flex-col md:flex-row items-center gap-16 ${reverse ? 'md:flex-row-reverse' : ''}`}>
+    <section ref={sectionRef} className={`relative min-h-[80vh] py-16 px-6 md:py-32 md:px-20 flex flex-col md:flex-row items-center gap-12 md:gap-16 ${reverse ? 'md:flex-row-reverse' : ''}`}>
       <div className="w-full md:w-5/12">
-        <span className="text-8xl font-black opacity-10 leading-none block mb-6 font-mono">{number}</span>
-        <h2 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter leading-none">{title}</h2>
-        <p className="text-xl md:text-2xl text-white/50 mb-12 max-w-md font-light">{subtitle}</p>
+        <span className="text-6xl md:text-8xl font-black opacity-10 leading-none block mb-6 font-mono">{number}</span>
+        <h2 className="text-4xl sm:text-5xl md:text-8xl font-black mb-8 tracking-tighter leading-none">{title}</h2>
+        <p className="text-base sm:text-lg md:text-2xl text-white/50 mb-12 max-w-md font-light leading-relaxed">{subtitle}</p>
         <Magnetic>
           <a 
             href={link} 
@@ -546,35 +624,38 @@ const ParallaxSection = ({ number, title, subtitle, image, speed, link = "#", re
 
 const Footer = () => {
     return (
-        <footer id="contact" className="relative h-screen flex flex-col items-center justify-center p-10 overflow-hidden">
+        <footer id="contact" className="relative min-h-screen md:h-screen flex flex-col justify-between items-center py-16 md:py-20 px-6 md:px-10 overflow-hidden">
 
             <div className="absolute inset-0 z-[-1] overflow-hidden">
                 <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-violet-900/10 blur-[150px] rounded-full" />
                 <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-900/10 blur-[150px] rounded-full" />
             </div>
 
-            <div className="text-center relative z-20">
-                <div className="text-xs font-bold tracking-[1em] text-violet-400 mb-12 uppercase">Available for work</div>
-                <h2 className="text-[9vw] font-black tracking-tighter mb-16 leading-none uppercase">
+            {/* Top spacer for layout balance on desktop */}
+            <div className="hidden md:block h-10" />
+
+            <div className="text-center relative z-20 my-auto">
+                <div className="text-xs font-bold tracking-[1em] text-violet-400 mb-8 md:mb-12 uppercase">[ Available for work ]</div>
+                <h2 className="text-5xl sm:text-6xl md:text-[9vw] font-black tracking-tighter mb-10 md:mb-16 leading-none uppercase">
                     Connect <br /> <span className="text-gradient">Globally.</span>
                 </h2>
-                <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
+                <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
                     <Magnetic strength={0.3}>
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajans@gmail.com" target="_blank" className="px-16 py-6 bg-white text-black font-black text-xl rounded-full hover:scale-105 transition-transform flex items-center gap-4">
-                            SAY HI <Mail size={24} strokeWidth={3} />
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=venmugilrajans@gmail.com" target="_blank" className="px-10 py-5 md:px-16 md:py-6 bg-white text-black font-black text-lg md:text-xl rounded-full hover:scale-105 transition-transform flex items-center gap-4">
+                            SAY HI <Mail size={20} strokeWidth={3} />
                         </a>
                     </Magnetic>
                     <Magnetic strength={0.2}>
-                       <a href="https://venmugilrajan.github.io/portfolio/VENMUGIL%20RAJAN%20S-%20RES.pdf" target="_blank" className="px-12 py-6 border border-white/20 text-white font-bold text-lg rounded-full hover:bg-white/5 transition-colors">
+                       <a href="https://venmugilrajan.github.io/portfolio/VENMUGIL%20RAJAN%20S-%20RES.pdf" target="_blank" className="px-8 py-5 md:px-12 md:py-6 border border-white/20 text-white font-bold text-base md:text-lg rounded-full hover:bg-white/5 transition-colors">
                             DOWNLOAD RESUME
                         </a>
                     </Magnetic>
                 </div>
             </div>
 
-            <div className="absolute bottom-10 w-full px-10 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-bold tracking-[0.4em] uppercase text-white/50 z-20">
-                <div>© 2026 VENMUGIL RAJAN • CRAFTED WITH REACT & GSAP</div>
-                <div className="flex gap-12 text-white/60">
+            <div className="w-full max-w-7xl mt-16 md:mt-0 flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] font-bold tracking-[0.4em] uppercase text-white/50 z-20">
+                <div className="text-center md:text-left">© 2026 VENMUGIL RAJAN • CRAFTED WITH REACT & GSAP</div>
+                <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-white/60">
                     <a href="https://github.com/venmugilrajan" target="_blank" className="hover:text-white transition-colors">GITHUB</a>
                     <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" className="hover:text-white transition-colors">LINKEDIN</a>
                     <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" className="hover:text-white transition-colors">LEETCODE</a>

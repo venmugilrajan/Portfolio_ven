@@ -139,3 +139,13 @@ body {
 [data-animation="split-text"] .char {
   display: inline-block;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  * {
+    cursor: auto !important;
+  }
+  #custom-cursor,
+  #custom-cursor-follower {
+    display: none !important;
+  }
+}

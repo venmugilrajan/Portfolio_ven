@@ -17,13 +17,34 @@
     display: none;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .tilted-card-mobile-alert {
-        display: block;
+        display: none !important;
     }
 
     .tilted-card-caption {
-        display: none;
+        display: none !important;
+    }
+
+    .tilted-card-figure {
+        height: auto !important;
+        width: 100% !important;
+        min-height: unset !important;
+    }
+
+    .tilted-card-inner {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 4/3 !important;
+        max-width: 100% !important;
+    }
+
+    .tilted-card-img {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute !important;
+        top: 0;
+        left: 0;
     }
 }
 
