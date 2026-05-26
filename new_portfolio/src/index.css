@@ -1,114 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Pacifico&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-background text-darkBackground font-karla selection:bg-black/10 overflow-x-hidden;
+    @apply bg-background text-textPrimary font-karla overflow-x-hidden;
     margin: 0;
     padding: 0;
+    cursor: none;
   }
 
-  /* Custom styling for black theme sections */
-  .theme-dark {
-    @apply bg-darkBackground text-white selection:bg-white/10;
-  }
-}
-
-/* Keyframe Animations */
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  ::selection {
+    background: rgba(57, 255, 20, 0.2);
+    color: #39FF14;
   }
 }
 
-.yin-yang-spin {
-  animation: spin-slow 12s linear infinite;
-}
-
-/* Leaf-Shaped Project Cards styling */
-.leaf-card {
-  border-top-right-radius: 4rem;
-  border-bottom-left-radius: 4rem;
-  border-top-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.leaf-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.05);
-}
-
-/* Scrollbars */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Timeline Custom Styles */
-.timeline-line {
+/* ─── Scanline Overlay ─── */
+.scanlines::before {
+  content: '';
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 100%;
-  background: white;
-  z-index: 10;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
-@media (max-width: 768px) {
-  .timeline-line {
-    left: 20px;
-    transform: none;
-  }
+/* ─── Neon Glow Text ─── */
+.neon-text {
+  color: #39FF14;
+  text-shadow: 0 0 8px rgba(57,255,20,0.8), 0 0 20px rgba(57,255,20,0.4);
 }
 
-/* Global Navigation Border Frame */
+.neon-border {
+  border-color: #39FF14;
+  box-shadow: 0 0 8px rgba(57,255,20,0.4), inset 0 0 8px rgba(57,255,20,0.05);
+}
+
+/* ─── Outer Frame ─── */
 .border-frame {
   position: fixed;
-  inset: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  inset: 10px;
+  border: 1px solid rgba(57,255,20,0.12);
   pointer-events: none;
   z-index: 90;
+  border-radius: 4px;
 }
 
-.theme-dark .border-frame {
-  border-color: rgba(255, 255, 255, 0.08);
+/* ─── Glass Card ─── */
+.glass-card {
+  background: rgba(19, 19, 26, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(57,255,20,0.15);
 }
 
-/* Glow Borders for Subpages */
-.neon-glow-border {
-  box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.05), 0 0 20px rgba(59, 130, 246, 0.05);
+.glass-card-purple {
+  background: rgba(19, 19, 26, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(123,47,190,0.3);
 }
 
-/* Custom interactive pointer */
+/* ─── Project Cards ─── */
+.proj-card {
+  background: #13131A;
+  border: 1px solid rgba(57,255,20,0.1);
+  transition: all 0.4s cubic-bezier(0.25,1,0.5,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.proj-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(57,255,20,0.04), transparent);
+  transition: left 0.6s ease;
+}
+
+.proj-card:hover::before {
+  left: 100%;
+}
+
+.proj-card:hover {
+  border-color: rgba(57,255,20,0.4);
+  box-shadow: 0 0 30px rgba(57,255,20,0.08), 0 20px 40px rgba(0,0,0,0.4);
+  transform: translateY(-4px);
+}
+
+/* ─── Hexagon Button ─── */
+.hex-btn {
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
+
+/* ─── Custom Cursor ─── */
 .custom-cursor {
-  width: 8px;
-  height: 8px;
-  background-color: currentColor;
+  width: 6px;
+  height: 6px;
+  background-color: #39FF14;
   border-radius: 50%;
   position: fixed;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 9999;
-  transition: width 0.3s, height 0.3s, background-color 0.3s;
+  box-shadow: 0 0 6px #39FF14, 0 0 12px rgba(57,255,20,0.5);
+  transition: opacity 0.2s;
 }
 
 .custom-cursor-follower {
-  width: 32px;
-  height: 32px;
-  border: 1.5px solid currentColor;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(57,255,20,0.6);
   border-radius: 50%;
   position: fixed;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 9998;
-  transition: width 0.3s, height 0.3s, border-color 0.3s, transform 0.1s ease-out;
+  transition: width 0.25s, height 0.25s, border-color 0.25s, transform 0.08s ease-out;
+}
+
+/* ─── No Scrollbar ─── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Nav Links (vertical) ─── */
+.nav-link-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.nav-link-vertical:hover {
+  color: #39FF14;
+  text-shadow: 0 0 8px rgba(57,255,20,0.7);
+}
+
+/* ─── Terminal blink ─── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.blink { animation: blink 1.2s step-end infinite; }
+
+/* ─── Feat Card hover ─── */
+.feat-card {
+  background: #13131A;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.35s ease;
+}
+.feat-card:hover {
+  border-color: rgba(123,47,190,0.5);
+  box-shadow: 0 0 30px rgba(123,47,190,0.12);
 }

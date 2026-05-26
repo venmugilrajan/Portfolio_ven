@@ -1,461 +1,261 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Github, Linkedin, Mail, Code2, ExternalLink, Award, Sparkles, BookOpen } from 'lucide-react';
+import { ArrowLeft, Github, Linkedin, Mail, Code2, ExternalLink, Award, Sparkles, BookOpen, Terminal } from 'lucide-react';
 import profileImg from './Gemini_Generated_Image_xuuob3xuuob3xuuo.png';
-import faceImg from './face.png';
-import digitImg from './digit.png';
-import rewardImg from './reward.jpg';
 
-// --- Particle Background for Skills Section ---
+// --- Particle Canvas ---
 const ParticleCanvas = () => {
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animationId;
-    let particles = [];
-    let mouse = { x: null, y: null };
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    let animId;
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener('resize', resize);
-
-    const onMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-    const onMouseLeave = () => {
-      mouse.x = null;
-      mouse.y = null;
-    };
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseleave', onMouseLeave);
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2;
-        this.radius = Math.random() * 3 + 1;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-      }
-      draw() {
-        ctx.fillStyle = 'rgba(59, 130, 246, 0.4)';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 50; i++) {
-      particles.push(new Particle());
-    }
-
+    const particles = Array.from({ length: 60 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
+      r: Math.random() * 1.5 + 0.5,
+    }));
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        ctx.fillStyle = 'rgba(57,255,20,0.5)';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
       });
-
-      // Draw lines between close particles
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 110) {
-            ctx.strokeStyle = `rgba(59, 130, 246, ${0.12 * (1 - dist / 110)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
+          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 100) {
+            ctx.strokeStyle = `rgba(57,255,20,${0.15 * (1 - d / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
           }
         }
       }
-
-      // Draw lines to mouse
-      if (mouse.x !== null) {
-        particles.forEach((p) => {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 160) {
-            ctx.strokeStyle = `rgba(59, 130, 246, ${0.25 * (1 - dist / 160)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-          }
-        });
-      }
-
-      animationId = requestAnimationFrame(animate);
+      animId = requestAnimationFrame(animate);
     };
     animate();
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
-    };
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
   }, []);
-
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />;
 };
 
-// --- Custom Drag-to-Scroll Container ---
+// --- Horizontal Scroll ---
 const HorizontalScroll = ({ children }) => {
-  const containerRef = useRef(null);
-  const isDown = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-
-  const onMouseDown = (e) => {
-    isDown.current = true;
-    startX.current = e.pageX - containerRef.current.offsetLeft;
-    scrollLeft.current = containerRef.current.scrollLeft;
-  };
-
-  const onMouseLeave = () => {
-    isDown.current = false;
-  };
-
-  const onMouseUp = () => {
-    isDown.current = false;
-  };
-
-  const onMouseMove = (e) => {
-    if (!isDown.current) return;
-    e.preventDefault();
-    const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    containerRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
+  const ref = useRef(null);
+  const down = useRef(false), startX = useRef(0), sl = useRef(0);
   return (
-    <div
-      ref={containerRef}
-      onMouseDown={onMouseDown}
-      onMouseLeave={onMouseLeave}
-      onMouseUp={onMouseUp}
-      onMouseMove={onMouseMove}
-      className="flex gap-10 overflow-x-auto no-scrollbar py-8 px-10 cursor-grab active:cursor-grabbing select-none w-full max-w-7xl mx-auto scroll-smooth"
-    >
-      {children}
-    </div>
+    <div ref={ref}
+      onMouseDown={e => { down.current = true; startX.current = e.pageX - ref.current.offsetLeft; sl.current = ref.current.scrollLeft; }}
+      onMouseLeave={() => down.current = false}
+      onMouseUp={() => down.current = false}
+      onMouseMove={e => { if (!down.current) return; e.preventDefault(); ref.current.scrollLeft = sl.current - (e.pageX - ref.current.offsetLeft - startX.current) * 1.5; }}
+      className="flex gap-8 overflow-x-auto no-scrollbar py-8 px-10 cursor-grab active:cursor-grabbing select-none w-full max-w-7xl mx-auto"
+    >{children}</div>
   );
 };
 
-// --- Custom Mouse Cursor Follower ---
+// --- Custom Cursor ---
 const CustomCursor = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [followerPos, setFollowerPos] = useState({ x: 0, y: 0 });
-  const [hovered, setHovered] = useState(false);
-
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [fol, setFol] = useState({ x: 0, y: 0 });
+  const [hov, setHov] = useState(false);
   useEffect(() => {
-    const onMouseMove = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleHover = (e) => {
-      const target = e.target;
-      const isInteractive = target.closest('a, button, .cursor-pointer');
-      setHovered(!!isInteractive);
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseover', handleHover);
-
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseover', handleHover);
-    };
+    const move = e => setPos({ x: e.clientX, y: e.clientY });
+    const hover = e => setHov(!!e.target.closest('a,button,.cursor-pointer'));
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseover', hover);
+    return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseover', hover); };
   }, []);
-
-  // Smooth follower animation
   useEffect(() => {
-    let animationId;
-    const updateFollower = () => {
-      setFollowerPos((prev) => {
-        const dx = position.x - prev.x;
-        const dy = position.y - prev.y;
-        return {
-          x: prev.x + dx * 0.15,
-          y: prev.y + dy * 0.15,
-        };
-      });
-      animationId = requestAnimationFrame(updateFollower);
-    };
-    updateFollower();
-    return () => cancelAnimationFrame(animationId);
-  }, [position]);
-
+    let id;
+    const upd = () => { setFol(p => ({ x: p.x + (pos.x - p.x) * 0.15, y: p.y + (pos.y - p.y) * 0.15 })); id = requestAnimationFrame(upd); };
+    upd(); return () => cancelAnimationFrame(id);
+  }, [pos]);
   return (
     <>
-      <div
-        className="custom-cursor hidden md:block"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          opacity: hovered ? 0 : 1,
-        }}
-      />
-      <div
-        className="custom-cursor-follower hidden md:block"
-        style={{
-          left: `${followerPos.x}px`,
-          top: `${followerPos.y}px`,
-          transform: `translate(-50%, -50%) scale(${hovered ? 1.5 : 1})`,
-          backgroundColor: hovered ? 'rgba(59, 130, 246, 0.05)' : 'transparent',
-        }}
-      />
+      <div className="custom-cursor hidden md:block" style={{ left: pos.x, top: pos.y, opacity: hov ? 0 : 1 }} />
+      <div className="custom-cursor-follower hidden md:block" style={{ left: fol.x, top: fol.y, transform: `translate(-50%,-50%) scale(${hov ? 1.8 : 1})`, borderColor: hov ? 'rgba(57,255,20,0.9)' : 'rgba(57,255,20,0.5)' }} />
     </>
   );
 };
 
-// --- Main App Component ---
+// --- Main App ---
 export default function App() {
-  const [page, setPage] = useState('home'); // 'home', 'skills', 'work', 'feats'
+  const [page, setPage] = useState('home');
   const [isOpened, setIsOpened] = useState(false);
+  const navigateTo = p => { setPage(p); setIsOpened(false); };
 
-  // Auto-reset state when returning to home page
-  const navigateTo = (nextPage) => {
-    setPage(nextPage);
-  };
-
-  const isDark = page === 'work';
-  const isLeftDark = isDark || (page === 'home' && isOpened);
+  const isHome = page === 'home';
 
   return (
-    <div className={`min-h-screen relative font-karla transition-colors duration-700 ${isDark ? 'theme-dark' : 'bg-background text-darkBackground'}`}>
+    <div className="min-h-screen relative font-karla bg-background text-textPrimary overflow-hidden">
       <CustomCursor />
-      
-      {/* Outer Layout Frame */}
       <div className="border-frame" />
 
-      {/* Shared Navigations */}
-      <header className="fixed top-8 left-8 right-8 flex justify-between items-center z-50 pointer-events-none">
-        <div 
-          onClick={() => {
-            setIsOpened(false);
-            navigateTo('home');
-          }}
-          className={`text-xs font-bold tracking-[0.35em] font-mono cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity ${isLeftDark ? 'text-white' : 'text-black'}`}
-        >
-          VENMUGIL
+      {/* Header */}
+      <header className="fixed top-6 left-6 right-6 flex justify-between items-center z-50 pointer-events-none">
+        <div onClick={() => navigateTo('home')}
+          className="text-2xl font-pacifico cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity text-textPrimary">
+          VR
         </div>
-
-        {/* Navigation / Back Arrow in Center Header */}
-        <div className="flex items-center gap-4 pointer-events-auto">
-          {/* Back Navigation Arrow */}
+        <div className="pointer-events-auto">
           <AnimatePresence>
-            {page !== 'home' && (
-              <motion.button
-                key="back-button"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
+            {!isHome && (
+              <motion.button key="back" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
                 onClick={() => navigateTo('home')}
-                className={`p-3 rounded-full border border-current hover:bg-current hover:text-white transition-all flex items-center justify-center`}
-                aria-label="Back to home"
-              >
-                <ArrowLeft size={18} />
+                className="p-2.5 rounded-full border border-accent/40 text-accent hover:bg-accent hover:text-background transition-all flex items-center justify-center"
+                aria-label="Back">
+                <ArrowLeft size={16} />
               </motion.button>
             )}
           </AnimatePresence>
         </div>
-
-        <a 
-          href="mailto:venmugilrajans@gmail.com" 
-          className={`text-xs font-bold uppercase tracking-[0.2em] pointer-events-auto hover:opacity-50 transition-opacity ${isDark ? 'text-white' : 'text-black'}`}
-        >
+        <a href="mailto:venmugilrajans@gmail.com"
+          className="pointer-events-auto text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-textMuted hover:text-accent hover:neon-text transition-all">
           Say hi..
         </a>
       </header>
 
-      {/* Left Sidebar Nav & Socials (Homepage only) */}
-      {page === 'home' && (
-        <div className={`fixed left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-8 md:gap-12 z-50 ${isLeftDark ? 'text-white' : 'text-black'}`}>
-          <div className="flex flex-col items-center gap-12 md:gap-20 text-[10px] font-bold uppercase tracking-[0.3em] font-mono">
-            {/* Projects (always on left sidebar) */}
-            <button 
-              onClick={() => navigateTo('work')} 
-              className="hover:opacity-50 transition-opacity -rotate-90 origin-center my-4"
-            >
-              Projects
-            </button>
-          </div>
-          
-          {/* Social Icons */}
-          <div className="flex flex-col items-center gap-4 md:gap-6 mt-4">
-            <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Github size={14} /></a>
-            <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Linkedin size={14} /></a>
-            <a href="mailto:venmugilrajans@gmail.com" className="hover:opacity-60 transition-opacity"><Mail size={14} /></a>
-            <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Code2 size={14} /></a>
-            <div className="w-[1px] h-12 md:h-20 bg-current opacity-30 mt-2" />
+      {/* Left Sidebar — Home only */}
+      {isHome && (
+        <div className={`fixed left-5 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-10 transition-colors duration-500 ${isOpened ? 'text-accent' : 'text-textMuted'}`}>
+          <button onClick={() => navigateTo('work')} className="nav-link-vertical hover:text-accent transition-colors">Projects</button>
+          <div className="flex flex-col items-center gap-4 mt-4">
+            <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><Github size={13} /></a>
+            <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><Linkedin size={13} /></a>
+            <a href="mailto:venmugilrajans@gmail.com" className="hover:text-accent transition-colors"><Mail size={13} /></a>
+            <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><Code2 size={13} /></a>
+            <div className="w-px h-14 bg-accent/20 mt-1" />
           </div>
         </div>
       )}
 
-      {/* Right Sidebar Nav (Homepage only) */}
-      {page === 'home' && (
-        <div className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-12 z-50 text-black">
-          <button 
-            onClick={() => navigateTo('feats')} 
-            className="hover:opacity-50 transition-opacity rotate-90 origin-center my-4 text-[10px] font-bold uppercase tracking-[0.3em] font-mono"
-          >
-            Feats
-          </button>
-          <div className="w-[1px] h-12 md:h-20 bg-black opacity-30 mt-4" />
+      {/* Right Sidebar — Home only */}
+      {isHome && (
+        <div className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-10 text-textMuted">
+          <button onClick={() => navigateTo('feats')} className="nav-link-vertical hover:text-accent transition-colors">Feats</button>
+          <div className="w-px h-14 bg-accent/20 mt-4" />
         </div>
       )}
 
-      {/* Bottom Nav Links (Homepage only) */}
-      {page === 'home' && (
-        <div className="fixed bottom-8 left-4 md:left-8 right-4 md:right-8 flex justify-between text-[10px] font-bold uppercase tracking-[0.3em] font-mono z-50 pointer-events-none">
-          <button 
-            onClick={() => setIsOpened(!isOpened)} 
-            className={`pointer-events-auto hover:opacity-50 transition-opacity ${isOpened ? 'text-white' : 'text-black'}`}
-          >
+      {/* Bottom Footer Nav — Home only */}
+      {isHome && (
+        <div className="fixed bottom-6 left-5 right-5 flex justify-between z-50 pointer-events-none">
+          <button onClick={() => setIsOpened(v => !v)}
+            className={`pointer-events-auto text-[10px] font-mono font-bold uppercase tracking-[0.25em] transition-all ${isOpened ? 'text-accent' : 'text-textMuted hover:text-accent'}`}>
             About
           </button>
-          <button 
-            onClick={() => navigateTo('skills')} 
-            className="pointer-events-auto hover:opacity-50 transition-opacity text-black"
-          >
+          <button onClick={() => navigateTo('skills')}
+            className="pointer-events-auto text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-textMuted hover:text-accent transition-all">
             My Skills
           </button>
         </div>
       )}
 
-      {/* Social Sidebar (only on subpages) */}
-      {page !== 'home' && (
-        <div className={`fixed bottom-8 left-8 hidden md:flex flex-col gap-6 z-50 items-center ${isLeftDark ? 'text-white' : 'text-black'}`}>
-          <div className="w-[1px] h-20 bg-current opacity-30" />
-          <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Github size={16} /></a>
-          <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Linkedin size={16} /></a>
-          <a href="mailto:venmugilrajans@gmail.com" className="hover:opacity-60 transition-opacity"><Mail size={16} /></a>
-          <a href="https://leetcode.com/u/Venmugilrajans/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity"><Code2 size={16} /></a>
+      {/* Subpage Socials */}
+      {!isHome && (
+        <div className="fixed bottom-6 left-6 hidden md:flex flex-col items-center gap-5 z-50 text-textMuted">
+          <div className="w-px h-16 bg-accent/20" />
+          <a href="https://github.com/venmugilrajan" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><Github size={14} /></a>
+          <a href="https://www.linkedin.com/in/venmugil-rajan-s-1362b3354/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><Linkedin size={14} /></a>
+          <a href="mailto:venmugilrajans@gmail.com" className="hover:text-accent transition-colors"><Mail size={14} /></a>
         </div>
       )}
 
-      {/* Main Content Router */}
+      {/* Main */}
       <main className="min-h-screen w-full flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
-          {page === 'home' && (
-            <motion.div
-              key="home"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full h-screen flex items-center justify-center"
-            >
-              {/* Splitting Background Animation */}
-              <div className="absolute inset-0 flex h-full w-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: '50%' }}
-                  animate={{ width: isOpened ? '50%' : '100%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 120 }}
-                  className="h-full bg-background relative"
-                >
-                  {/* Left part splits black when open */}
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isOpened ? 1 : 0 }}
-                    className="absolute inset-0 bg-darkBackground"
-                  />
+
+          {/* HOME */}
+          {isHome && (
+            <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+              className="relative w-full h-screen flex items-center justify-center scanlines">
+
+              {/* Background grid */}
+              <div className="absolute inset-0 z-0" style={{
+                backgroundImage: 'linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px)',
+                backgroundSize: '60px 60px'
+              }} />
+
+              {/* Animated split background */}
+              <div className="absolute inset-0 flex overflow-hidden">
+                <motion.div animate={{ width: isOpened ? '50%' : '100%' }} transition={{ type: 'spring', damping: 28, stiffness: 110 }} className="h-full bg-background relative">
+                  {isOpened && <div className="absolute inset-0 bg-surface" />}
                 </motion.div>
-                <div className="h-full w-[1px] bg-black/10 relative z-10" />
-                <motion.div 
-                  initial={{ width: '50%' }}
-                  animate={{ width: isOpened ? '50%' : '0%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 120 }}
-                  className="h-full bg-background"
-                />
+                <motion.div animate={{ width: isOpened ? '50%' : '0%' }} transition={{ type: 'spring', damping: 28, stiffness: 110 }} className="h-full bg-surfaceAlt" />
               </div>
 
-               {/* Close split-screen center arrow */}
+              {/* Divider glow line */}
+              {isOpened && <div className="absolute top-0 bottom-0 z-10" style={{ left: '50%', width: '1px', background: 'linear-gradient(to bottom, transparent, #39FF14, transparent)', boxShadow: '0 0 12px #39FF14' }} />}
+
+              {/* Close button */}
               <AnimatePresence>
                 {isOpened && (
-                  <motion.button
-                    key="close-split-button"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                  <motion.button key="close" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
                     onClick={() => setIsOpened(false)}
-                    className="absolute top-24 left-1/2 -translate-x-1/2 p-3 rounded-full border border-black dark:border-white z-50 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                  >
-                    <ArrowLeft size={18} />
+                    className="absolute top-20 left-1/2 -translate-x-1/2 p-2.5 rounded-full border border-accent/50 text-accent hover:bg-accent hover:text-background transition-all z-50">
+                    <ArrowLeft size={16} />
                   </motion.button>
                 )}
               </AnimatePresence>
 
-              {/* Centered click target (Code Orb) */}
+              {/* Entry Button */}
               {!isOpened && (
                 <div className="flex flex-col items-center gap-4 z-20">
-                  <button 
-                    onClick={() => setIsOpened(true)}
-                    className="w-40 h-40 rounded-full flex items-center justify-center cursor-pointer overflow-hidden relative group transition-transform duration-500 hover:scale-105 active:scale-95"
-                    aria-label="Enter site"
-                  >
-                    {/* Pulsing glow ring */}
-                    <div className="absolute inset-0 rounded-full bg-blue-500/10 scale-90 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-500 animate-ping" />
-                    
-                    {/* Outer rotating dashed ring */}
-                    <div className="absolute inset-2 rounded-full border border-dashed border-black/35 dark:border-white/35 animate-[spin_30s_linear_infinite] group-hover:border-blue-500/50 group-hover:animate-[spin_10s_linear_infinite] transition-all duration-500" />
-                    
-                    {/* Inner interactive disc */}
-                    <div className="absolute inset-6 rounded-full bg-black text-white dark:bg-white dark:text-black flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-95 shadow-lg">
-                      <Code2 size={28} className="group-hover:text-blue-400 group-hover:scale-110 transition-all duration-500" />
-                      <span className="text-[8px] font-black tracking-[0.2em] uppercase font-mono mt-2 opacity-65 group-hover:opacity-100 group-hover:text-blue-400 transition-all duration-500">ENTER</span>
+                  <button onClick={() => setIsOpened(true)} aria-label="Enter"
+                    className="relative w-36 h-36 flex items-center justify-center group cursor-pointer">
+                    {/* Outer spinning ring */}
+                    <div className="absolute inset-0 rounded-full border border-dashed border-accent/30 animate-[spin_25s_linear_infinite] group-hover:border-accent/60 transition-colors" />
+                    {/* Middle ring */}
+                    <div className="absolute inset-3 rounded-full border border-accent/20 group-hover:border-accent/50 transition-colors animate-glow-pulse" />
+                    {/* Core */}
+                    <div className="absolute inset-8 rounded-full bg-surface border border-accent/40 group-hover:border-accent group-hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] flex flex-col items-center justify-center transition-all duration-300">
+                      <Terminal size={22} className="text-accent group-hover:scale-110 transition-transform" />
+                      <span className="text-[7px] font-mono font-bold tracking-[0.2em] text-accent/70 mt-1 group-hover:text-accent transition-colors">ENTER</span>
                     </div>
                   </button>
-                  <span className="text-xs uppercase tracking-[0.4em] font-mono opacity-50 animate-pulse">click here</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-textMuted animate-pulse">click here</span>
                 </div>
               )}
 
-              {/* Split Screen Profile Contents */}
+              {/* Split profile content */}
               {isOpened && (
-                <div className="relative z-20 flex flex-col items-center justify-center px-6 w-full max-w-5xl h-full">
-                  {/* Split Frame Text Box */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="w-11/12 max-w-4xl min-h-[450px] md:h-[450px] flex flex-col md:flex-row relative z-20 overflow-visible"
-                  >
-                    {/* Left half - darkBackground background with rounded corners */}
-                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white/20 md:border-r-0 border-b-0 md:border-b bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl">
-                      <h1 className="text-3xl md:text-5xl font-black mb-4 leading-none font-sans">
-                        Hi,<br />I'm Venmugil Rajan
+                <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-5xl px-6 h-full">
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+                    className="w-full max-w-4xl flex flex-col md:flex-row h-auto md:h-[480px] overflow-visible">
+
+                    {/* Left — intro text */}
+                    <div className="w-full md:w-1/2 min-h-[260px] md:h-full bg-surface border border-accent/20 md:border-r-0 border-b-0 md:border-b p-10 md:p-12 flex flex-col justify-center rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none">
+                      <span className="text-[10px] font-mono text-accent tracking-[0.35em] uppercase mb-4 flex items-center gap-2">
+                        <span className="w-6 h-px bg-accent" /> Full-Stack Developer
+                      </span>
+                      <h1 className="text-4xl md:text-5xl font-black leading-none mb-5 text-textPrimary">
+                        Hi,<br />I'm Venmugil<br />Rajan
                       </h1>
-                      <p className="text-xs md:text-sm text-white/75 font-light font-mono leading-relaxed max-w-md">
-                        Detail-oriented Software / Full-Stack Developer with certified expertise in Java SE 17, OCI, and AWS. Passionate about building high-performance web systems and smooth interactive interfaces.
+                      <p className="text-xs text-textMuted font-mono leading-relaxed">
+                        Building high-performance web systems & smooth interactive interfaces. Certified in Java SE 17, OCI, and AWS.
                       </p>
+                      <div className="flex gap-3 mt-6">
+                        {['React', 'Python', 'Java', 'ML'].map(t => (
+                          <span key={t} className="text-[9px] font-mono px-2 py-1 border border-accent/25 text-accent/70 rounded">{t}</span>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Right half - background (beige) with rounded corners */}
-                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black/10 md:border-l-0 border-t-0 md:border-t bg-background relative flex items-center justify-center overflow-hidden md:overflow-visible z-10 rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none shadow-2xl">
-                      <img 
-                        src={profileImg} 
-                        alt="Venmugil Rajan Profile" 
-                        className="absolute bottom-0 h-[95%] md:h-[105%] w-auto object-contain select-none z-20 pointer-events-none"
-                      />
+                    {/* Right — avatar */}
+                    <div className="w-full md:w-1/2 h-[280px] md:h-full bg-surfaceAlt border border-accent/10 md:border-l-0 border-t-0 md:border-t relative flex items-end justify-center overflow-hidden rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none">
+                      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(57,255,20,0.08) 0%, transparent 70%)' }} />
+                      <img src={profileImg} alt="Venmugil" className="h-[92%] w-auto object-contain select-none z-10 relative" />
                     </div>
                   </motion.div>
                 </div>
@@ -463,290 +263,123 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* --- Skills View --- */}
+          {/* SKILLS */}
           {page === 'skills' && (
-            <motion.div
-              key="skills"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full min-h-screen flex flex-col justify-center items-center neon-glow-border py-24 px-6 z-10"
-            >
+            <motion.div key="skills" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              className="relative w-full min-h-screen flex flex-col justify-center items-center py-24 px-6 z-10">
               <ParticleCanvas />
-              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03] z-0">
-                <span className="text-[20vw] font-black tracking-tighter">SKILLS</span>
+              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03]">
+                <span className="text-[20vw] font-black tracking-tighter text-accent">SKILLS</span>
               </div>
-
-              <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 z-10">
-                {/* Left Card: Full-Stack */}
-                <motion.div 
-                  initial={{ x: -50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-[#f3f2ec] border-2 border-black p-8 md:p-10 text-black flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-4 mb-6 text-left">
-                      <Code2 className="text-black" size={24} />
-                      <h3 className="text-lg font-mono font-bold uppercase tracking-wider text-black">
-                        Full-Stack & Systems
-                      </h3>
+              <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 z-10">
+                {[
+                  { icon: <Code2 size={20} className="text-accent" />, title: 'Full-Stack & Systems', desc: 'Building responsive interfaces, structured backends, and secure auth systems.', items: ['C, C++, Java, Python, SQL', 'React.js, TailwindCSS, PHP, MySQL', 'Git, GitHub, PHPMailer'] },
+                  { icon: <Sparkles size={20} className="text-purple" />, title: 'AI / ML & Ecosystem', desc: 'Integrating ML classifiers, neural networks, and interactive training environments.', items: ['TensorFlow, CNN, OpenCV, Keras', 'Streamlit, Gradio, Jupyter', 'PowerBI, Unity, Figma'] }
+                ].map((s, i) => (
+                  <motion.div key={i} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.15 }}
+                    className="glass-card rounded-xl p-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      {s.icon}
+                      <h3 className="font-mono font-bold text-sm uppercase tracking-wider text-textPrimary">{s.title}</h3>
                     </div>
-                    <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-mono text-left">
-                      Building responsive client interfaces, structured backend databases, and secure authentication models.
-                    </p>
-                    
-                    <div className="mb-6 text-left">
-                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">I LIKE TO CODE IN</span>
-                      <span className="text-xs md:text-sm font-semibold text-black/85 font-mono">C, C++, Java, Python, SQL</span>
-                    </div>
-
-                    <div className="text-left">
-                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">WEB PLATFORMS</span>
-                      <ul className="space-y-1 text-xs md:text-sm font-semibold text-black/85 font-mono">
-                        <li>• HTML5, CSS3, JavaScript</li>
-                        <li>• React.js, TailwindCSS, PHP, MySQL</li>
-                        <li>• Git, GitHub, PHPMailer</li>
-                      </ul>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Right Card: AI/ML & Ecosystem */}
-                <motion.div 
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="bg-[#f3f2ec] border-2 border-black p-8 md:p-10 text-black flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-4 mb-6 text-left">
-                      <Sparkles className="text-black" size={24} />
-                      <h3 className="text-lg font-mono font-bold uppercase tracking-wider text-black">
-                        AI/ML & Ecosystem
-                      </h3>
-                    </div>
-                    <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-mono text-left">
-                      Integrating machine learning classifiers, neural networks, and interactive training environments.
-                    </p>
-
-                    <div className="mb-6 text-left">
-                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">INTEGRATIONS</span>
-                      <span className="text-xs md:text-sm font-semibold text-black/85 font-mono">Machine Learning, CNN Models, OpenCV, TensorFlow, Keras</span>
-                    </div>
-
-                    <div className="text-left">
-                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">DEVELOPMENT TOOLS</span>
-                      <ul className="space-y-1 text-xs md:text-sm font-semibold text-black/85 font-mono">
-                        <li>• Streamlit, Gradio, Jupyter</li>
-                        <li>• PowerBI, Figma, Canva</li>
-                        <li>• Unity Game Engine, C#</li>
-                      </ul>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Bottom Spinning Decorative Code Emblem */}
-              <div className="absolute bottom-8 right-8 text-black opacity-30 animate-[spin_20s_linear_infinite]">
-                <Code2 size={24} />
+                    <p className="text-xs text-textMuted leading-relaxed mb-5 font-mono">{s.desc}</p>
+                    <ul className="space-y-2">
+                      {s.items.map((it, j) => (
+                        <li key={j} className="text-xs font-mono text-textMuted flex items-start gap-2">
+                          <span className="text-accent mt-0.5">›</span>{it}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           )}
 
-          {/* --- Work/Projects View --- */}
+          {/* PROJECTS */}
           {page === 'work' && (
-            <motion.div
-              key="work"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full min-h-screen flex flex-col justify-center items-center py-24 px-6 z-10"
-            >
-              {/* Background Watermark */}
-              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03] z-0">
-                <span className="text-[22vw] font-black tracking-tighter text-white">WORK</span>
+            <motion.div key="work" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              className="relative w-full min-h-screen flex flex-col justify-center items-center py-24 z-10">
+              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03]">
+                <span className="text-[22vw] font-black tracking-tighter text-accent">WORK</span>
               </div>
-
-              {/* Leaf Cards grab-scroll container */}
               <HorizontalScroll>
                 {[
-                  {
-                    num: '01',
-                    title: 'Online Leave Portal',
-                    desc: 'Full-stack portal for student-teacher leave management with PHP/MySQL backend and automated email notifications.',
-                    tech: 'PHP, MySQL, PHPMailer, HTML/CSS',
-                    link: 'https://github.com/venmugilrajan/online_leave_portal',
-                  },
-                  {
-                    num: '02',
-                    title: 'Face Recognition CNN',
-                    desc: 'Deep learning application using Convolutional Neural Networks and OpenCV for real-time face identification.',
-                    tech: 'Python, OpenCV, TensorFlow, CNN',
-                    link: 'https://github.com/venmugilrajan/face_recognition_cnn',
-                  },
-                  {
-                    num: '03',
-                    title: 'Digit Recognizer',
-                    desc: 'Machine learning drawing interface powered by CNN to accurately identify handwritten numbers.',
-                    tech: 'Python, TensorFlow, Gradio, CNN',
-                    link: 'https://github.com/venmugilrajan/DIGIT_RECOGNIZER_CNN',
-                  },
-                  {
-                    num: '04',
-                    title: 'Student Reward Site',
-                    desc: 'A gamified platform designed for tracking and managing student rewards and classroom achievements.',
-                    tech: 'React, Tailwind CSS, Lucide Icons',
-                    link: 'https://venmugilrajan-student-reward-points.hf.space/',
-                  }
-                ].map((proj, idx) => (
-                  <div 
-                    key={idx}
-                    className="leaf-card w-[320px] md:w-[380px] h-[450px] bg-background text-darkBackground flex-shrink-0 flex flex-col justify-between p-8 relative overflow-hidden"
-                  >
+                  { num: '01', title: 'Online Leave Portal', desc: 'Full-stack portal for student-teacher leave management with PHP/MySQL backend and automated email notifications.', tech: 'PHP, MySQL, PHPMailer, HTML/CSS', link: 'https://github.com/venmugilrajan/online_leave_portal' },
+                  { num: '02', title: 'Face Recognition CNN', desc: 'Deep learning application using CNNs and OpenCV for real-time face identification.', tech: 'Python, OpenCV, TensorFlow, CNN', link: 'https://github.com/venmugilrajan/face_recognition_cnn' },
+                  { num: '03', title: 'Digit Recognizer', desc: 'ML drawing interface powered by CNN to accurately identify handwritten numbers.', tech: 'Python, TensorFlow, Gradio, CNN', link: 'https://github.com/venmugilrajan/DIGIT_RECOGNIZER_CNN' },
+                  { num: '04', title: 'Student Reward Site', desc: 'Gamified platform for tracking and managing student rewards and classroom achievements.', tech: 'React, Tailwind CSS, Lucide Icons', link: 'https://venmugilrajan-student-reward-points.hf.space/' },
+                ].map((p, i) => (
+                  <div key={i} className="proj-card w-[300px] md:w-[360px] h-[420px] flex-shrink-0 flex flex-col justify-between p-8 rounded-xl">
                     <div className="flex justify-between items-start">
-                      <span className="text-4xl font-black font-mono opacity-25">{proj.num}</span>
-                      <a href={proj.link} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-black/5 hover:bg-black hover:text-white transition-colors">
-                        <ExternalLink size={16} />
+                      <span className="text-5xl font-black font-mono text-accent/15">{p.num}</span>
+                      <a href={p.link} target="_blank" rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-accent/5 border border-accent/15 hover:bg-accent hover:text-background hover:border-accent text-accent transition-all">
+                        <ExternalLink size={14} />
                       </a>
                     </div>
-
-                    <div className="my-auto text-left">
-                      <h3 className="text-xl md:text-2xl font-black tracking-tight mb-4">{proj.title}</h3>
-                      <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-4">
-                        {proj.desc}
-                      </p>
+                    <div>
+                      <h3 className="text-xl font-black tracking-tight mb-3 text-textPrimary">{p.title}</h3>
+                      <p className="text-xs text-textMuted font-mono leading-relaxed">{p.desc}</p>
                     </div>
-
-                    <div className="text-left">
-                      <span className="text-[9px] font-bold tracking-[0.2em] font-mono uppercase text-black/50 block">TECH STACK</span>
-                      <span className="text-xs font-semibold text-black/80">{proj.tech}</span>
+                    <div>
+                      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-accent/50 block mb-1">Tech Stack</span>
+                      <span className="text-xs font-mono text-textMuted">{p.tech}</span>
                     </div>
                   </div>
                 ))}
               </HorizontalScroll>
-
-              {/* Bottom Swipe cue */}
-              <div className="absolute bottom-8 right-8 flex items-center gap-6">
-                <span className="text-xs uppercase tracking-[0.4em] font-mono opacity-30 select-none">Swipe..</span>
-                <div className="text-white opacity-30 animate-[spin_20s_linear_infinite]">
-                  <Code2 size={24} />
-                </div>
+              <div className="absolute bottom-8 right-8 flex items-center gap-3 text-textMuted/30">
+                <span className="text-[10px] font-mono uppercase tracking-widest">Drag</span>
+                <Code2 size={16} className="animate-[spin_20s_linear_infinite]" />
               </div>
             </motion.div>
           )}
 
-
-
-          {/* --- Achievements / Feats View --- */}
+          {/* FEATS */}
           {page === 'feats' && (
-            <motion.div
-              key="feats"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full min-h-screen py-32 px-6 z-10 overflow-y-auto no-scrollbar"
-              style={{ 
-                backgroundImage: "url('https://images.unsplash.com/photo-1513001900722-370f803f498d?q=80&w=1974&auto=format&fit=crop')", 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center',
-                backgroundAttachment: 'fixed'
-              }}
-            >
-              {/* Desaturating/Texturizing Overlay */}
-              <div className="absolute inset-0 bg-[#FCFBF7]/95 z-0 backdrop-blur-[1px]" />
-
-              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03] z-0">
-                <span className="text-[18vw] font-black tracking-tighter text-black font-sans">FEATS</span>
+            <motion.div key="feats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              className="relative w-full min-h-screen py-28 px-6 z-10 overflow-y-auto no-scrollbar">
+              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03]">
+                <span className="text-[18vw] font-black tracking-tighter text-purple">FEATS</span>
               </div>
-
               <div className="max-w-4xl mx-auto z-10 relative">
-                <h2 className="text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-600 mb-10 text-center flex items-center justify-center gap-3">
-                  <Award size={18} /> Verified Expertise & Credentials
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-purple mb-10 text-center flex items-center justify-center gap-2">
+                  <Award size={14} /> Verified Credentials
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    {
-                      title: 'Java SE 17 Developer',
-                      issuer: 'Oracle Certified Professional',
-                      badge: 'https://catalog-education.oracle.com/pls/certview/sharebadge?id=1D3EA450257E886F877C6A8BB1ACD3C44B36D0AA8695B836071B56AC09982A84',
-                      desc: 'Certified competence in building modular object-oriented applications, managing concurrency APIs, and implementing memory-safe constructs in Java SE 17.',
-                      tags: ['#Java', '#ObjectOriented', '#Concurrency', '#Backend']
-                    },
-                    {
-                      title: 'OCI Cloud Infrastructure',
-                      issuer: 'Oracle Certified Associate',
-                      badge: 'https://catalog-education.oracle.com/ords/certview/sharebadge?id=97EAAF86588703C016AD49C5D2D1227FFF0125CB02B79F2FA21515C6C5EFF3F0',
-                      desc: 'Architecting containerized cloud pipelines, load balancers, database instances, and securing microservices on Oracle Cloud Infrastructure.',
-                      tags: ['#OracleCloud', '#OCI', '#Microservices', '#Infrastructure']
-                    },
-                    {
-                      title: 'AWS Cloud Fundamentals',
-                      issuer: 'Amazon Essentials Training',
-                      badge: 'https://venmugilrajan.github.io/portfolio/aws%20cloud%20practitioner%20essentials.pdf',
-                      desc: 'Familiarity with cloud security models, serverless functions (Lambda), EC2 cluster management, and S3 asset buckets.',
-                      tags: ['#AWS', '#CloudPractitioner', '#Serverless', '#DevOps']
-                    },
-                    {
-                      title: 'Python for Data Science',
-                      issuer: 'Cognitive Class Certificate',
-                      badge: 'https://courses.cognitiveclass.ai/certificates/27e9670f63de45c7a1d677dea3155c8d',
-                      desc: 'Expertise in data extraction, CSV processing, statistical calculations, and graphing using Pandas, NumPy, and Matplotlib.',
-                      tags: ['#Python', '#DataScience', '#Pandas', '#DataAnalysis']
-                    }
-                  ].map((feat, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ y: 20, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-white/90 border-2 border-black p-8 rounded-none flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                    >
-                      <div className="text-left">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="text-lg font-bold tracking-tight text-black">{feat.title}</h3>
-                            <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider font-mono">{feat.issuer}</span>
-                          </div>
-                          <BookOpen className="text-blue-500" size={20} />
+                    { title: 'Java SE 17 Developer', issuer: 'Oracle Certified Professional', badge: 'https://catalog-education.oracle.com/pls/certview/sharebadge?id=1D3EA450257E886F877C6A8BB1ACD3C44B36D0AA8695B836071B56AC09982A84', desc: 'Certified in building modular OOP applications, concurrency APIs, and memory-safe Java SE 17 constructs.', tags: ['Java', 'OOP', 'Concurrency'] },
+                    { title: 'OCI Cloud Infrastructure', issuer: 'Oracle Certified Associate', badge: 'https://catalog-education.oracle.com/ords/certview/sharebadge?id=97EAAF86588703C016AD49C5D2D1227FFF0125CB02B79F2FA21515C6C5EFF3F0', desc: 'Architecting containerized cloud pipelines, load balancers, and securing microservices on Oracle Cloud.', tags: ['OCI', 'Cloud', 'Microservices'] },
+                    { title: 'AWS Cloud Fundamentals', issuer: 'Amazon Essentials Training', badge: 'https://venmugilrajan.github.io/portfolio/aws%20cloud%20practitioner%20essentials.pdf', desc: 'Cloud security, serverless Lambda, EC2 cluster management, and S3 asset architecture.', tags: ['AWS', 'Serverless', 'DevOps'] },
+                    { title: 'Python for Data Science', issuer: 'Cognitive Class Certificate', badge: 'https://courses.cognitiveclass.ai/certificates/27e9670f63de45c7a1d677dea3155c8d', desc: 'Data extraction, CSV processing, statistical analysis using Pandas, NumPy, and Matplotlib.', tags: ['Python', 'Pandas', 'Data Analysis'] },
+                  ].map((f, i) => (
+                    <motion.div key={i} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                      className="feat-card rounded-xl p-7">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-bold text-base tracking-tight text-textPrimary">{f.title}</h3>
+                          <span className="text-[10px] font-mono text-purple uppercase tracking-wider">{f.issuer}</span>
                         </div>
-                        <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-sans">
-                          {feat.desc}
-                        </p>
+                        <BookOpen size={16} className="text-purple/60 mt-1" />
                       </div>
-
-                      <div>
-                        {/* Tags row */}
-                        <div className="flex flex-wrap gap-2 mb-4 text-left">
-                          {feat.tags.map((tag, tid) => (
-                            <span key={tid} className="text-[9px] font-mono font-bold text-black/50 mr-2">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="text-left">
-                          <a 
-                            href={feat.badge} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black hover:text-blue-600 transition-colors"
-                          >
-                            Verify Credential <ExternalLink size={12} />
-                          </a>
-                        </div>
+                      <p className="text-xs text-textMuted leading-relaxed mb-5 font-mono">{f.desc}</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {f.tags.map((t, j) => (
+                          <span key={j} className="text-[9px] font-mono px-2 py-0.5 rounded border border-purple/20 text-purple/70">#{t}</span>
+                        ))}
                       </div>
+                      <a href={f.badge} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-textMuted hover:text-accent transition-colors">
+                        Verify <ExternalLink size={10} />
+                      </a>
                     </motion.div>
                   ))}
                 </div>
               </div>
             </motion.div>
           )}
+
         </AnimatePresence>
       </main>
     </div>
