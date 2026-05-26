@@ -366,41 +366,26 @@ export default function App() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="w-full md:w-11/12 border border-white/20 md:border-transparent flex flex-col md:flex-row items-center relative py-12 md:py-0"
+                    className="w-11/12 max-w-4xl min-h-[450px] md:h-[450px] flex flex-col md:flex-row relative z-20 overflow-visible"
                   >
-                    {/* Left text - aligns over black side */}
-                    <div className="w-full md:w-1/2 text-white pr-0 md:pr-10 text-center md:text-left z-20">
-                      <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter mb-4 leading-none font-sans">
+                    {/* Left half - black background with white border */}
+                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white md:border-r-0 bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10">
+                      <h1 className="text-3xl md:text-5xl font-black mb-4 leading-none font-sans">
                         Hi,<br />I'm Venmugil Rajan
                       </h1>
-                      <p className="text-sm md:text-base text-white/60 font-light leading-relaxed mb-6 font-mono max-w-sm mx-auto md:mx-0">
-                        A software/full-stack developer passionate about building clean algorithms and immersive experiences.
+                      <p className="text-xs md:text-sm text-white/75 font-light font-mono leading-relaxed max-w-md">
+                        Detail-oriented Software / Full-Stack Developer with certified expertise in Java SE 17, OCI, and AWS. Passionate about building high-performance web systems and smooth interactive interfaces.
                       </p>
                     </div>
 
-                    {/* Right text - aligns over white side */}
-                    <div className="w-full md:w-1/2 text-darkBackground pl-0 md:pl-10 text-center md:text-left z-20 mt-6 md:mt-0">
-                      <p className="text-sm md:text-lg text-black/70 font-light leading-relaxed max-w-md">
-                        I specialize in programming, web architecture, and machine learning models. I enjoy building visually rich interfaces, optimizing scroll animations, and implementing creative frontends.
-                      </p>
-                    </div>
-
-                    {/* Central Border Overlay Card wrapper */}
-                    <div className="absolute inset-0 border border-black/10 dark:border-white/10 rounded-2xl pointer-events-none hidden md:block" />
-
-                    {/* Center Floating Profile Photo */}
-                    <motion.div 
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5, type: 'spring' }}
-                      className="absolute left-1/2 -translate-x-1/2 w-48 h-48 md:w-64 md:h-64 rounded-full border border-black/15 bg-background overflow-hidden p-3 z-30 hidden md:block"
-                    >
+                    {/* Right half - beige background with black border */}
+                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black md:border-l-0 bg-[#FCFBF7] relative flex items-center justify-center overflow-hidden md:overflow-visible z-10">
                       <img 
                         src={profileImg} 
                         alt="Venmugil Rajan Profile" 
-                        className="w-full h-full object-cover rounded-full select-none"
+                        className="absolute bottom-0 h-[95%] md:h-[105%] w-auto object-contain select-none z-20 pointer-events-none"
                       />
-                    </motion.div>
+                    </div>
                   </motion.div>
 
                   {/* Marginalized Nav Anchors inside Open Split */}
@@ -440,43 +425,71 @@ export default function App() {
               </div>
 
               <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 z-10">
-                {/* Left Card: Web Architecture */}
+                {/* Left Card: Full-Stack */}
                 <motion.div 
                   initial={{ x: -50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-white/40 backdrop-blur-md border border-black/5 p-10 rounded-3xl"
+                  className="bg-[#f3f2ec] border-2 border-black p-8 md:p-10 text-black flex flex-col justify-between"
                 >
-                  <h3 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-blue-500 mb-6 flex items-center gap-3">
-                    <Sparkles size={16} /> Web Architecture
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {['HTML5', 'CSS3', 'JavaScript', 'React.js', 'PHP', 'MySQL', 'TailwindCSS', 'Git'].map((skill, idx) => (
-                      <div key={idx} className="flex items-center gap-3 py-2 border-b border-black/5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                        <span className="text-sm font-medium text-black/80">{skill}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <div className="flex items-center gap-4 mb-6 text-left">
+                      <Code2 className="text-black" size={24} />
+                      <h3 className="text-lg font-mono font-bold uppercase tracking-wider text-black">
+                        Full-Stack & Systems
+                      </h3>
+                    </div>
+                    <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-mono text-left">
+                      Building responsive client interfaces, structured backend databases, and secure authentication models.
+                    </p>
+                    
+                    <div className="mb-6 text-left">
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">I LIKE TO CODE IN</span>
+                      <span className="text-xs md:text-sm font-semibold text-black/85 font-mono">C, C++, Java, Python, SQL</span>
+                    </div>
+
+                    <div className="text-left">
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">WEB PLATFORMS</span>
+                      <ul className="space-y-1 text-xs md:text-sm font-semibold text-black/85 font-mono">
+                        <li>• HTML5, CSS3, JavaScript</li>
+                        <li>• React.js, TailwindCSS, PHP, MySQL</li>
+                        <li>• Git, GitHub, PHPMailer</li>
+                      </ul>
+                    </div>
                   </div>
                 </motion.div>
 
-                {/* Right Card: Programming & Machine Learning */}
+                {/* Right Card: AI/ML & Ecosystem */}
                 <motion.div 
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white/40 backdrop-blur-md border border-black/5 p-10 rounded-3xl"
+                  className="bg-[#f3f2ec] border-2 border-black p-8 md:p-10 text-black flex flex-col justify-between"
                 >
-                  <h3 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-blue-500 mb-6 flex items-center gap-3">
-                    <Code2 size={16} /> Technical Arsenal
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {['C', 'C++', 'Java', 'Python', 'Machine Learning', 'TensorFlow', 'Jupyter', 'Unity'].map((skill, idx) => (
-                      <div key={idx} className="flex items-center gap-3 py-2 border-b border-black/5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                        <span className="text-sm font-medium text-black/80">{skill}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <div className="flex items-center gap-4 mb-6 text-left">
+                      <Sparkles className="text-black" size={24} />
+                      <h3 className="text-lg font-mono font-bold uppercase tracking-wider text-black">
+                        AI/ML & Ecosystem
+                      </h3>
+                    </div>
+                    <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-mono text-left">
+                      Integrating machine learning classifiers, neural networks, and interactive training environments.
+                    </p>
+
+                    <div className="mb-6 text-left">
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">INTEGRATIONS</span>
+                      <span className="text-xs md:text-sm font-semibold text-black/85 font-mono">Machine Learning, CNN Models, OpenCV, TensorFlow, Keras</span>
+                    </div>
+
+                    <div className="text-left">
+                      <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-black block mb-2">DEVELOPMENT TOOLS</span>
+                      <ul className="space-y-1 text-xs md:text-sm font-semibold text-black/85 font-mono">
+                        <li>• Streamlit, Gradio, Jupyter</li>
+                        <li>• PowerBI, Figma, Canva</li>
+                        <li>• Unity Game Engine, C#</li>
+                      </ul>
+                    </div>
                   </div>
                 </motion.div>
               </div>
@@ -551,14 +564,14 @@ export default function App() {
                       </a>
                     </div>
 
-                    <div className="my-auto">
+                    <div className="my-auto text-left">
                       <h3 className="text-xl md:text-2xl font-black tracking-tight mb-4">{proj.title}</h3>
                       <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-4">
                         {proj.desc}
                       </p>
                     </div>
 
-                    <div>
+                    <div className="text-left">
                       <span className="text-[9px] font-bold tracking-[0.2em] font-mono uppercase text-black/50 block">TECH STACK</span>
                       <span className="text-xs font-semibold text-black/80">{proj.tech}</span>
                     </div>
@@ -601,21 +614,25 @@ export default function App() {
                       company: 'Self-Employed / Independent Work',
                       duration: '2024 - Present',
                       location: 'Remote',
+                      badge: 'CONTRACT',
+                      tags: ['React.js', 'PHP', 'MySQL', 'Tailwind CSS', 'GSAP'],
                       desc: [
-                        'Constructed fully custom web applications using PHP, React, and MySQL.',
-                        'Optimized interactive frontends and GSAP timeline scrolling layouts.',
-                        'Connected deep learning and machine learning script outputs to Streamlit and Gradio interfaces.'
+                        'Construct custom responsive web applications with secure backend databases.',
+                        'Optimize interactive frontends and GSAP timeline scrolling layouts.',
+                        'Connect deep learning model script outputs to Streamlit and Gradio web interfaces.'
                       ]
                     },
                     {
-                      role: 'Machine Learning Training Engineer',
+                      role: 'Machine Learning Training Intern',
                       company: 'Academic Research & Projects',
                       duration: '2023 - 2024',
-                      location: 'Coimbatore, India',
+                      location: 'Coimbatore, India - Onsite',
+                      badge: 'INTERNSHIP',
+                      tags: ['Python', 'TensorFlow', 'CNN', 'OpenCV', 'Keras'],
                       desc: [
-                        'Implemented custom CNN layers for high-accuracy Handwritten Digit Recognition.',
-                        'Built robust CNN facial recognition classification algorithms.',
-                        'Explored TensorFlow/Keras datasets to construct skin disease classification systems.'
+                        'Designed CNN classification networks for high-accuracy Handwritten Digit Recognition.',
+                        'Built robust facial recognition classification algorithms using OpenCV capture streams.',
+                        'Explored pre-processing of large dataset matrices to train custom neural network layers.'
                       ]
                     },
                     {
@@ -623,10 +640,12 @@ export default function App() {
                       company: 'University Education',
                       duration: '2021 - 2024',
                       location: 'India',
+                      badge: 'ACADEMIC',
+                      tags: ['Data Structures', 'Algorithms', 'DBMS', 'Software Engineering'],
                       desc: [
-                        'Graduated with honors in Computer Science.',
-                        'Relevant coursework: Data Structures, Algorithms, DBMS, Software Engineering, AI & Machine Learning.',
-                        'Spearheaded development of departmental leave systems and administrative portals.'
+                        'Graduated with honors in Computer Science with a strong foundation in databases.',
+                        'Spearheaded development of departmental leave portals and student reward platforms.',
+                        'Achieved certified expertise in Java SE programming and Cloud infrastructure fundamentals.'
                       ]
                     }
                   ].map((exp, idx) => (
@@ -641,9 +660,23 @@ export default function App() {
                         viewport={{ once: true }}
                         className="w-full md:w-[45%] pl-12 md:pl-0 md:text-right pr-0 md:pr-10 mb-4 md:mb-0 flex flex-col justify-center"
                       >
-                        <h4 className="text-lg md:text-xl font-bold tracking-tight text-white">{exp.role}</h4>
-                        <span className="text-xs font-mono text-white/50 block mt-1">{exp.company}</span>
-                        <span className="text-xs font-bold text-blue-400 mt-2">{exp.duration} • {exp.location}</span>
+                        <div className="bg-[#151515] border border-white/10 p-6 rounded-2xl md:inline-block text-left md:text-right">
+                          <h4 className="text-lg md:text-xl font-bold tracking-tight text-white">{exp.role}</h4>
+                          <span className="text-xs font-mono text-white/50 block mt-1">{exp.company}</span>
+                          <span className="text-xs font-bold text-blue-400 mt-2 block">{exp.duration} • {exp.location}</span>
+                          
+                          {/* Badges row */}
+                          <div className="flex flex-wrap gap-2 mt-4 justify-start md:justify-end">
+                            <span className="px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider rounded border border-white/20 bg-white/5 text-white">
+                              {exp.badge}
+                            </span>
+                            {exp.tags.map((tag, tidx) => (
+                              <span key={tidx} className="px-2 py-0.5 text-[9px] font-mono rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </motion.div>
 
                       {/* Spacer for Timeline */}
@@ -656,11 +689,11 @@ export default function App() {
                         viewport={{ once: true }}
                         className="w-full md:w-[45%] pl-12 md:pl-10 flex items-center"
                       >
-                        <div className="bg-white/[0.03] border border-white/5 p-6 rounded-2xl w-full">
+                        <div className="bg-white/[0.03] border border-white/5 p-6 rounded-2xl w-full text-left">
                           <ul className="space-y-3 text-xs md:text-sm text-white/70 font-light leading-relaxed">
                             {exp.desc.map((bullet, bidx) => (
-                              <li key={bidx} className="flex gap-2">
-                                <span className="text-blue-500 font-mono">•</span>
+                              <li key={bidx} className="flex gap-2 text-left">
+                                <span className="text-blue-500 font-mono">▶</span>
                                 <span>{bullet}</span>
                               </li>
                             ))}
@@ -683,10 +716,18 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
               className="relative w-full min-h-screen py-32 px-6 z-10 overflow-y-auto no-scrollbar"
+              style={{ 
+                backgroundImage: "url('https://images.unsplash.com/photo-1513001900722-370f803f498d?q=80&w=1974&auto=format&fit=crop')", 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed'
+              }}
             >
-              {/* Overlay background textures */}
-              <div className="absolute inset-0 bg-white/20 select-none pointer-events-none opacity-[0.02] z-0 flex items-center justify-center">
-                <span className="text-[18vw] font-black tracking-tighter text-black">FEATS</span>
+              {/* Desaturating/Texturizing Overlay */}
+              <div className="absolute inset-0 bg-[#FCFBF7]/95 z-0 backdrop-blur-[1px]" />
+
+              <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.03] z-0">
+                <span className="text-[18vw] font-black tracking-tighter text-black font-sans">FEATS</span>
               </div>
 
               <div className="max-w-4xl mx-auto z-10 relative">
@@ -700,25 +741,29 @@ export default function App() {
                       title: 'Java SE 17 Developer',
                       issuer: 'Oracle Certified Professional',
                       badge: 'https://catalog-education.oracle.com/pls/certview/sharebadge?id=1D3EA450257E886F877C6A8BB1ACD3C44B36D0AA8695B836071B56AC09982A84',
-                      desc: 'Certified competence in building modular object-oriented applications, managing concurrency APIs, and implementing memory-safe constructs in Java SE 17.'
+                      desc: 'Certified competence in building modular object-oriented applications, managing concurrency APIs, and implementing memory-safe constructs in Java SE 17.',
+                      tags: ['#Java', '#ObjectOriented', '#Concurrency', '#Backend']
                     },
                     {
                       title: 'OCI Cloud Infrastructure',
                       issuer: 'Oracle Certified Associate',
                       badge: 'https://catalog-education.oracle.com/ords/certview/sharebadge?id=97EAAF86588703C016AD49C5D2D1227FFF0125CB02B79F2FA21515C6C5EFF3F0',
-                      desc: 'Architecting containerized cloud pipelines, load balancers, database instances, and securing microservices on Oracle Cloud Infrastructure.'
+                      desc: 'Architecting containerized cloud pipelines, load balancers, database instances, and securing microservices on Oracle Cloud Infrastructure.',
+                      tags: ['#OracleCloud', '#OCI', '#Microservices', '#Infrastructure']
                     },
                     {
                       title: 'AWS Cloud Fundamentals',
                       issuer: 'Amazon Essentials Training',
                       badge: 'https://venmugilrajan.github.io/portfolio/aws%20cloud%20practitioner%20essentials.pdf',
-                      desc: 'Familiarity with cloud security models, serverless functions (Lambda), EC2 cluster management, and S3 asset buckets.'
+                      desc: 'Familiarity with cloud security models, serverless functions (Lambda), EC2 cluster management, and S3 asset buckets.',
+                      tags: ['#AWS', '#CloudPractitioner', '#Serverless', '#DevOps']
                     },
                     {
                       title: 'Python for Data Science',
                       issuer: 'Cognitive Class Certificate',
                       badge: 'https://courses.cognitiveclass.ai/certificates/27e9670f63de45c7a1d677dea3155c8d',
-                      desc: 'Expertise in data extraction, CSV processing, statistical calculations, and graphing using Pandas, NumPy, and Matplotlib.'
+                      desc: 'Expertise in data extraction, CSV processing, statistical calculations, and graphing using Pandas, NumPy, and Matplotlib.',
+                      tags: ['#Python', '#DataScience', '#Pandas', '#DataAnalysis']
                     }
                   ].map((feat, idx) => (
                     <motion.div
@@ -727,9 +772,9 @@ export default function App() {
                       whileInView={{ y: 0, opacity: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: idx * 0.1 }}
-                      className="bg-white/50 backdrop-blur-md border border-black/5 p-8 rounded-3xl flex flex-col justify-between"
+                      className="bg-white/90 border-2 border-black p-8 rounded-none flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
-                      <div>
+                      <div className="text-left">
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h3 className="text-lg font-bold tracking-tight text-black">{feat.title}</h3>
@@ -737,19 +782,32 @@ export default function App() {
                           </div>
                           <BookOpen className="text-blue-500" size={20} />
                         </div>
-                        <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6">
+                        <p className="text-xs md:text-sm text-black/70 font-light leading-relaxed mb-6 font-sans">
                           {feat.desc}
                         </p>
                       </div>
 
-                      <a 
-                        href={feat.badge} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black hover:text-blue-600 transition-colors"
-                      >
-                        Verify Credential <ExternalLink size={12} />
-                      </a>
+                      <div>
+                        {/* Tags row */}
+                        <div className="flex flex-wrap gap-2 mb-4 text-left">
+                          {feat.tags.map((tag, tid) => (
+                            <span key={tid} className="text-[9px] font-mono font-bold text-black/50 mr-2">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="text-left">
+                          <a 
+                            href={feat.badge} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black hover:text-blue-600 transition-colors"
+                          >
+                            Verify Credential <ExternalLink size={12} />
+                          </a>
+                        </div>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
