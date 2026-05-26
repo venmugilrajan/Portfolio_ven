@@ -229,7 +229,7 @@ const CustomCursor = () => {
 
 // --- Main App Component ---
 export default function App() {
-  const [page, setPage] = useState('home'); // 'home', 'skills', 'work', 'experience', 'feats'
+  const [page, setPage] = useState('home'); // 'home', 'skills', 'work', 'feats'
   const [isOpened, setIsOpened] = useState(false);
 
   // Auto-reset state when returning to home page
@@ -237,7 +237,7 @@ export default function App() {
     setPage(nextPage);
   };
 
-  const isDark = page === 'work' || page === 'experience';
+  const isDark = page === 'work';
   const isLeftDark = isDark || (page === 'home' && isOpened);
 
   return (
@@ -254,23 +254,13 @@ export default function App() {
             setIsOpened(false);
             navigateTo('home');
           }}
-          className={`text-2xl font-pacifico font-bold tracking-tight cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity ${isLeftDark ? 'text-white' : 'text-black'}`}
+          className={`text-xs font-bold tracking-[0.35em] font-mono cursor-pointer pointer-events-auto hover:opacity-75 transition-opacity ${isLeftDark ? 'text-white' : 'text-black'}`}
         >
-          VR
+          VENMUGIL
         </div>
 
         {/* Navigation / Back Arrow in Center Header */}
         <div className="flex items-center gap-4 pointer-events-auto">
-          {/* Experience link on mobile home page */}
-          {page === 'home' && (
-            <button
-              onClick={() => navigateTo('experience')}
-              className={`text-[10px] font-bold uppercase tracking-[0.3em] font-mono hover:opacity-50 transition-opacity md:hidden ${isOpened ? 'text-white' : 'text-black'}`}
-            >
-              Experience
-            </button>
-          )}
-
           {/* Back Navigation Arrow */}
           <AnimatePresence>
             {page !== 'home' && (
@@ -301,14 +291,6 @@ export default function App() {
       {page === 'home' && (
         <div className={`fixed left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-8 md:gap-12 z-50 ${isLeftDark ? 'text-white' : 'text-black'}`}>
           <div className="flex flex-col items-center gap-12 md:gap-20 text-[10px] font-bold uppercase tracking-[0.3em] font-mono">
-            {/* Experience (desktop only - on mobile it moves to header) */}
-            <button 
-              onClick={() => navigateTo('experience')} 
-              className="hover:opacity-50 transition-opacity -rotate-90 origin-center my-4 hidden md:block"
-            >
-              Experience
-            </button>
-            
             {/* Projects (always on left sidebar) */}
             <button 
               onClick={() => navigateTo('work')} 
@@ -423,7 +405,7 @@ export default function App() {
                 )}
               </AnimatePresence>
 
-              {/* Centered click target (Yin-Yang) */}
+              {/* Centered click target (Code Orb) */}
               {!isOpened && (
                 <div className="flex flex-col items-center gap-4 z-20">
                   <button 
@@ -431,12 +413,17 @@ export default function App() {
                     className="w-40 h-40 rounded-full flex items-center justify-center cursor-pointer overflow-hidden relative group transition-transform duration-500 hover:scale-105 active:scale-95"
                     aria-label="Enter site"
                   >
-                    <svg viewBox="0 0 100 100" className="w-full h-full yin-yang-spin">
-                      <path d="M 50,0 A 50,50 0 0,0 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#020202" />
-                      <path d="M 50,0 A 50,50 0 0,1 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#FCFBF7" />
-                      <circle cx="50" cy="25" r="8" fill="#020202" />
-                      <circle cx="50" cy="75" r="8" fill="#FCFBF7" />
-                    </svg>
+                    {/* Pulsing glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-blue-500/10 scale-90 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-500 animate-ping" />
+                    
+                    {/* Outer rotating dashed ring */}
+                    <div className="absolute inset-2 rounded-full border border-dashed border-black/35 dark:border-white/35 animate-[spin_30s_linear_infinite] group-hover:border-blue-500/50 group-hover:animate-[spin_10s_linear_infinite] transition-all duration-500" />
+                    
+                    {/* Inner interactive disc */}
+                    <div className="absolute inset-6 rounded-full bg-black text-white dark:bg-white dark:text-black flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-95 shadow-lg">
+                      <Code2 size={28} className="group-hover:text-blue-400 group-hover:scale-110 transition-all duration-500" />
+                      <span className="text-[8px] font-black tracking-[0.2em] uppercase font-mono mt-2 opacity-65 group-hover:opacity-100 group-hover:text-blue-400 transition-all duration-500">ENTER</span>
+                    </div>
                   </button>
                   <span className="text-xs uppercase tracking-[0.4em] font-mono opacity-50 animate-pulse">click here</span>
                 </div>
@@ -452,8 +439,8 @@ export default function App() {
                     transition={{ delay: 0.3 }}
                     className="w-11/12 max-w-4xl min-h-[450px] md:h-[450px] flex flex-col md:flex-row relative z-20 overflow-visible"
                   >
-                    {/* Left half - black background with white border */}
-                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white md:border-r-0 border-b-0 md:border-b bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10">
+                    {/* Left half - darkBackground background with rounded corners */}
+                    <div className="w-full md:w-1/2 min-h-[250px] md:h-full border border-white/20 md:border-r-0 border-b-0 md:border-b bg-darkBackground text-white flex flex-col justify-center p-8 md:p-12 text-left z-10 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl">
                       <h1 className="text-3xl md:text-5xl font-black mb-4 leading-none font-sans">
                         Hi,<br />I'm Venmugil Rajan
                       </h1>
@@ -462,8 +449,8 @@ export default function App() {
                       </p>
                     </div>
 
-                    {/* Right half - beige background with black border */}
-                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black md:border-l-0 border-t-0 md:border-t bg-[#FCFBF7] relative flex items-center justify-center overflow-hidden md:overflow-visible z-10">
+                    {/* Right half - background (beige) with rounded corners */}
+                    <div className="w-full md:w-1/2 h-[300px] md:h-full border border-black/10 md:border-l-0 border-t-0 md:border-t bg-background relative flex items-center justify-center overflow-hidden md:overflow-visible z-10 rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none shadow-2xl">
                       <img 
                         src={profileImg} 
                         alt="Venmugil Rajan Profile" 
@@ -561,14 +548,9 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Bottom Spinning Decorative Yin-Yang */}
-              <div className="absolute bottom-8 right-8">
-                <svg viewBox="0 0 100 100" className="w-10 h-10 yin-yang-spin opacity-45">
-                  <path d="M 50,0 A 50,50 0 0,0 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#020202" />
-                  <path d="M 50,0 A 50,50 0 0,1 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#FCFBF7" />
-                  <circle cx="50" cy="25" r="8" fill="#020202" />
-                  <circle cx="50" cy="75" r="8" fill="#FCFBF7" />
-                </svg>
+              {/* Bottom Spinning Decorative Code Emblem */}
+              <div className="absolute bottom-8 right-8 text-black opacity-30 animate-[spin_20s_linear_infinite]">
+                <Code2 size={24} />
               </div>
             </motion.div>
           )}
@@ -649,130 +631,14 @@ export default function App() {
               {/* Bottom Swipe cue */}
               <div className="absolute bottom-8 right-8 flex items-center gap-6">
                 <span className="text-xs uppercase tracking-[0.4em] font-mono opacity-30 select-none">Swipe..</span>
-                <svg viewBox="0 0 100 100" className="w-10 h-10 yin-yang-spin opacity-45">
-                  <path d="M 50,0 A 50,50 0 0,0 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#020202" />
-                  <path d="M 50,0 A 50,50 0 0,1 50,100 A 25,25 0 0,0 50,50 A 25,25 0 0,1 50,0 Z" fill="#FCFBF7" />
-                  <circle cx="50" cy="25" r="8" fill="#020202" />
-                  <circle cx="50" cy="75" r="8" fill="#FCFBF7" />
-                </svg>
-              </div>
-            </motion.div>
-          )}
-
-          {/* --- Experience/Timeline View --- */}
-          {page === 'experience' && (
-            <motion.div
-              key="experience"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full min-h-screen py-32 px-6 z-10 overflow-y-auto no-scrollbar"
-            >
-              <div className="max-w-4xl mx-auto relative">
-                {/* Center timeline line */}
-                <div className="timeline-line" />
-
-                {/* Timeline Items */}
-                <div className="space-y-16">
-                  {[
-                    {
-                      role: 'Freelance Full-Stack Developer',
-                      company: 'Self-Employed / Independent Work',
-                      duration: '2024 - Present',
-                      location: 'Remote',
-                      badge: 'CONTRACT',
-                      tags: ['React.js', 'PHP', 'MySQL', 'Tailwind CSS', 'GSAP'],
-                      desc: [
-                        'Construct custom responsive web applications with secure backend databases.',
-                        'Optimize interactive frontends and GSAP timeline scrolling layouts.',
-                        'Connect deep learning model script outputs to Streamlit and Gradio web interfaces.'
-                      ]
-                    },
-                    {
-                      role: 'Machine Learning Training Intern',
-                      company: 'Academic Research & Projects',
-                      duration: '2023 - 2024',
-                      location: 'Coimbatore, India - Onsite',
-                      badge: 'INTERNSHIP',
-                      tags: ['Python', 'TensorFlow', 'CNN', 'OpenCV', 'Keras'],
-                      desc: [
-                        'Designed CNN classification networks for high-accuracy Handwritten Digit Recognition.',
-                        'Built robust facial recognition classification algorithms using OpenCV capture streams.',
-                        'Explored pre-processing of large dataset matrices to train custom neural network layers.'
-                      ]
-                    },
-                    {
-                      role: 'Bachelor of Computer Science',
-                      company: 'University Education',
-                      duration: '2021 - 2024',
-                      location: 'India',
-                      badge: 'ACADEMIC',
-                      tags: ['Data Structures', 'Algorithms', 'DBMS', 'Software Engineering'],
-                      desc: [
-                        'Graduated with honors in Computer Science with a strong foundation in databases.',
-                        'Spearheaded development of departmental leave portals and student reward platforms.',
-                        'Achieved certified expertise in Java SE programming and Cloud infrastructure fundamentals.'
-                      ]
-                    }
-                  ].map((exp, idx) => (
-                    <div key={idx} className="flex flex-col md:flex-row items-stretch relative">
-                      {/* Timeline dot */}
-                      <div className="absolute left-[20px] md:left-1/2 -translate-x-1/2 top-4 w-4 h-4 rounded-full bg-white border border-black z-20" />
-
-                      {/* Left Metadata Card */}
-                      <motion.div 
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="w-full md:w-[45%] pl-12 md:pl-0 md:text-right pr-0 md:pr-10 mb-4 md:mb-0 flex flex-col justify-center"
-                      >
-                        <div className="bg-[#151515] border border-white/10 p-6 rounded-2xl md:inline-block text-left md:text-right">
-                          <h4 className="text-lg md:text-xl font-bold tracking-tight text-white">{exp.role}</h4>
-                          <span className="text-xs font-mono text-white/50 block mt-1">{exp.company}</span>
-                          <span className="text-xs font-bold text-blue-400 mt-2 block">{exp.duration} • {exp.location}</span>
-                          
-                          {/* Badges row */}
-                          <div className="flex flex-wrap gap-2 mt-4 justify-start md:justify-end">
-                            <span className="px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider rounded border border-white/20 bg-white/5 text-white">
-                              {exp.badge}
-                            </span>
-                            {exp.tags.map((tag, tidx) => (
-                              <span key={tidx} className="px-2 py-0.5 text-[9px] font-mono rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      {/* Spacer for Timeline */}
-                      <div className="w-[10%] hidden md:block" />
-
-                      {/* Right Description Card */}
-                      <motion.div 
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="w-full md:w-[45%] pl-12 md:pl-10 flex items-center"
-                      >
-                        <div className="bg-white/[0.03] border border-white/5 p-6 rounded-2xl w-full text-left">
-                          <ul className="space-y-3 text-xs md:text-sm text-white/70 font-light leading-relaxed">
-                            {exp.desc.map((bullet, bidx) => (
-                              <li key={bidx} className="flex gap-2 text-left">
-                                <span className="text-blue-500 font-mono">▶</span>
-                                <span>{bullet}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </motion.div>
-                    </div>
-                  ))}
+                <div className="text-white opacity-30 animate-[spin_20s_linear_infinite]">
+                  <Code2 size={24} />
                 </div>
               </div>
             </motion.div>
           )}
+
+
 
           {/* --- Achievements / Feats View --- */}
           {page === 'feats' && (

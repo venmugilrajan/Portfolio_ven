@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#FCFBF7',
-        darkBackground: '#020202',
+        background: '#FAF8F5',
+        darkBackground: '#0F131E',
       },
       fontFamily: {
         karla: ['Karla', 'sans-serif'],
