@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-darkBackground font-karla selection:bg-black/10 overflow-x-hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Custom styling for black theme sections */
+  .theme-dark {
+    @apply bg-darkBackground text-white selection:bg-white/10;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.yin-yang-spin {
+  animation: spin-slow 12s linear infinite;
+}
+
+/* Leaf-Shaped Project Cards styling */
+.leaf-card {
+  border-top-right-radius: 4rem;
+  border-bottom-left-radius: 4rem;
+  border-top-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.leaf-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -15px rgba(255, 255, 255, 0.05);
+}
+
+/* Scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Timeline Custom Styles */
+.timeline-line {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: white;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .timeline-line {
+    left: 20px;
+    transform: none;
+  }
+}
+
+/* Global Navigation Border Frame */
+.border-frame {
+  position: fixed;
+  inset: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  z-index: 90;
+}
+
+.theme-dark .border-frame {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Glow Borders for Subpages */
+.neon-glow-border {
+  box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.05), 0 0 20px rgba(59, 130, 246, 0.05);
+}
+
+/* Custom interactive pointer */
+.custom-cursor {
+  width: 8px;
+  height: 8px;
+  background-color: currentColor;
+  border-radius: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+.custom-cursor-follower {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9998;
+  transition: width 0.3s, height 0.3s, border-color 0.3s, transform 0.1s ease-out;
+}
