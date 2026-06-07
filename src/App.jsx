@@ -13,6 +13,7 @@ import digitImg from './digit.png';
 import rewardImg from './reward.jpg';
 import weatherImg from './weather.png';
 import repoGuardImg from './repoguard.png';
+import placementPredictionImg from './placement_prediction.png';
 import javaCertImg from './java_cert.png';
 import pythonDsCertImg from './python_ds_cert.png';
 import ociCertImg from './oci_cert.png';
@@ -605,6 +606,13 @@ const App = () => {
                 image: repoGuardImg,
                 link: "https://github.com/venmugilrajan/RepoGuard",
                 tags: ["#Security", "#Git", "#Automation", "#Python"]
+              },
+              {
+                title: "Placement Predictor ML",
+                description: "A machine learning based placement predictor that evaluates CGPA, aptitude score, and number of projects to determine placement likelihood using Random Forest Classifier.",
+                image: placementPredictionImg,
+                link: "https://github.com/venmugilrajan/Placement_prediction",
+                tags: ["#MachineLearning", "#Python", "#Flask", "#Scikit-Learn"]
               }
             ].map((proj, idx) => (
               <ProjectCard key={idx} proj={proj} idx={idx} />
@@ -860,6 +868,15 @@ const App = () => {
                 link="https://venmugilrajan-student-reward-points.hf.space/"
                 buttonLabel="VIEW WEBSITE"
                 reverse
+              />
+
+              <ParallaxSection 
+                number="05"
+                title="Placement Predictor ML"
+                subtitle="A machine learning based placement predictor that evaluates CGPA, aptitude score, and projects to determine placement likelihood."
+                image={placementPredictionImg}
+                speed={0.1}
+                link="https://github.com/venmugilrajan/Placement_prediction"
               />
 
               <div className="flex justify-center py-20 relative z-20">
