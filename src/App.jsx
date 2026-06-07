@@ -207,7 +207,7 @@ const itemVariants = {
 };
 
 const App = () => {
-  const projectsContainerRef = useRef(null);
+  const [projectsContainer, setProjectsContainer] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -232,7 +232,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const el = projectsContainerRef.current;
+    const el = projectsContainer;
     if (!el) return;
 
     // 1. Mouse wheel translation (Vertical scroll -> Horizontal scroll)
@@ -326,7 +326,7 @@ const App = () => {
       el.removeEventListener('dragstart', handleDragStart);
       el.removeEventListener('click', handleClickCapture, true);
     };
-  }, [view]);
+  }, [projectsContainer]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -562,7 +562,7 @@ const App = () => {
           </div>
 
           {/* Horizontal scroll cards wrapper — supports mouse drag on desktop, touch swipe on mobile */}
-          <div ref={projectsContainerRef} data-lenis-prevent className="w-full flex overflow-x-auto gap-5 md:gap-8 py-8 md:py-10 px-4 md:px-20 no-scrollbar snap-x snap-mandatory relative z-10 select-none cursor-grab active:cursor-grabbing projects-slider-drag">
+          <div ref={setProjectsContainer} data-lenis-prevent className="w-full flex overflow-x-auto gap-5 md:gap-8 py-8 md:py-10 px-4 md:px-20 no-scrollbar snap-x snap-mandatory relative z-10 select-none cursor-grab active:cursor-grabbing projects-slider-drag">
             {[
               {
                 title: "Online Leave Portal",
