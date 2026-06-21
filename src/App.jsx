@@ -14,6 +14,7 @@ import rewardImg from './reward.jpg';
 import weatherImg from './weather.png';
 import repoGuardImg from './repoguard.png';
 import placementPredictionImg from './placement_prediction.png';
+import diabeticRetinopathyImg from './diabetic_retinopathy.png';
 import javaCertImg from './java_cert.png';
 import pythonDsCertImg from './python_ds_cert.png';
 import ociCertImg from './oci_cert.png';
@@ -222,6 +223,7 @@ const App = () => {
   const [view, setView] = useState(getViewFromPath);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [scrollTarget, setScrollTarget] = useState(null);
+  const [forceFlipped, setForceFlipped] = useState(false);
 
   // Navigate to a view AND push the correct URL
   const navigateTo = (newView, target = null) => {
@@ -555,11 +557,35 @@ const App = () => {
           </div>
 
           {/* Heading with WORK outline background */}
-          <div className="relative w-full overflow-hidden py-4 md:py-6">
+          <div className="relative w-full overflow-hidden py-4 md:py-6 flex flex-col items-center gap-6">
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
               <h2 className="text-[18vw] font-black opacity-[0.12] tracking-tighter leading-none" style={{ WebkitTextStroke: "1.5px rgba(255,255,255,0.25)", color: "transparent" }}>WORK</h2>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-center tracking-tighter uppercase relative z-10 px-4">ALL PROJECTS</h1>
+            
+            {/* Control buttons for flipping card views */}
+            <div className="flex gap-4 relative z-20">
+              <button 
+                onClick={() => setForceFlipped(false)}
+                className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
+                  !forceFlipped 
+                    ? 'bg-white text-black border-white shadow-lg shadow-white/10' 
+                    : 'bg-transparent text-white/60 border-white/20 hover:text-white hover:border-white/40'
+                }`}
+              >
+                Show Normal
+              </button>
+              <button 
+                onClick={() => setForceFlipped(true)}
+                className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
+                  forceFlipped 
+                    ? 'bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-600/30' 
+                    : 'bg-transparent text-white/60 border-white/20 hover:text-white hover:border-white/40'
+                }`}
+              >
+                Rotate / Details
+              </button>
+            </div>
           </div>
 
           {/* Horizontal scroll cards wrapper — supports mouse drag on desktop, touch swipe on mobile */}
@@ -613,9 +639,17 @@ const App = () => {
                 image: placementPredictionImg,
                 link: "https://github.com/venmugilrajan/Placement_prediction",
                 tags: ["#MachineLearning", "#Python", "#Flask", "#Scikit-Learn"]
+              },
+              {
+                title: "Diabetic Retinopathy Classification",
+                description: "Fine-tuned EfficientNet-B3 model (PyTorch/timm) classifying diabetic retinopathy severity (72.5% accuracy, 0.72 F1). Integrates OpenCV pre-processing and Focal Loss, deployed on Hugging Face spaces.",
+                image: diabeticRetinopathyImg,
+                link: "https://huggingface.co/spaces/venmugilrajan/Diabetic_Retinopathy",
+                github: "https://github.com/venmugilrajan/Diabetic_Retinopathy",
+                tags: ["#PyTorch", "#timm", "#OpenCV", "#Gradio", "#HuggingFace", "#FocalLoss"]
               }
             ].map((proj, idx) => (
-              <ProjectCard key={idx} proj={proj} idx={idx} />
+              <ProjectCard key={idx} proj={proj} idx={idx} forceFlipped={forceFlipped} />
             ))}
           </div>
 
@@ -920,8 +954,13 @@ const App = () => {
   );
 };
 
-const ProjectCard = ({ proj, idx }) => {
+const ProjectCard = ({ proj, idx, forceFlipped }) => {
   const [flipped, setFlipped] = useState(false);
+
+  useEffect(() => {
+    setFlipped(forceFlipped);
+  }, [forceFlipped]);
+
   return (
     <div
       className="flip-card snap-center"
@@ -967,7 +1006,7 @@ const ProjectCard = ({ proj, idx }) => {
               Visit
             </a>
             <a
-              href={proj.link}
+              href={proj.github || proj.link}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
