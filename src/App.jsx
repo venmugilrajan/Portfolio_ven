@@ -599,10 +599,10 @@ const App = () => {
                 tags: ["#PHP", "#MySQL", "#HTML5", "#CSS3"]
               },
               {
-                title: "Face Recognition CNN",
-                description: "Deep learning application using Convolutional Neural Networks for real-time face identification.",
+                title: "Emotion Recognition CNN",
+                description: "Deep learning application using Convolutional Neural Networks for real-time emotion identification.",
                 image: faceImg,
-                link: "https://github.com/venmugilrajan/face_recognition_cnn",
+                link: "https://github.com/venmugilrajan/Emotion_Rec",
                 tags: ["#Python", "#CNN", "#TensorFlow", "#OpenCV"]
               },
               {
@@ -875,12 +875,12 @@ const App = () => {
 
               <ParallaxSection 
                 number="02"
-                title="Face Recognition CNN"
-                subtitle="Deep learning application using Convolutional Neural Networks for real-time face identification."
+                title="Emotion Recognition CNN"
+                subtitle="Deep learning application using Convolutional Neural Networks for real-time emotion identification."
                 image={faceImg}
                 speed={-0.05}
                 objectPosition="center 35%"
-                link="https://github.com/venmugilrajan/face_recognition_cnn"
+                link="https://github.com/venmugilrajan/Emotion_Rec"
                 reverse
               />
 
