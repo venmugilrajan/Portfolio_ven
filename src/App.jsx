@@ -14,13 +14,14 @@ import rewardImg from './reward.jpg';
 import weatherImg from './weather.png';
 import repoGuardImg from './repoguard.png';
 import placementPredictionImg from './placement_prediction.png';
+import signlensImg from './signlens.jpg';
 import diabeticRetinopathyImg from './diabetic_retinopathy.png';
 import javaCertImg from './java_cert.png';
 import pythonDsCertImg from './python_ds_cert.png';
 import ociCertImg from './oci_cert.png';
 import awsCertImg from './aws_cert.png';
 import cscCertImg from './csc_cert.png';
-import leetcodeStatsImg from './leetcode_stats.png';
+import LeetCodeCard from './LeetCodeCard';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -634,11 +635,12 @@ const App = () => {
                 tags: ["#Security", "#Git", "#Automation", "#Python"]
               },
               {
-                title: "Placement Predictor ML",
-                description: "A machine learning based placement predictor that evaluates CGPA, aptitude score, and number of projects to determine placement likelihood using Random Forest Classifier.",
-                image: placementPredictionImg,
-                link: "https://github.com/venmugilrajan/Placement_prediction",
-                tags: ["#MachineLearning", "#Python", "#Flask", "#Scikit-Learn"]
+                title: "SignLens (Sign Language AI)",
+                description: "Real-time ISL & ASL sign language translator powered by MediaPipe 3D hand landmarks (21 joints) and neural classifiers achieving up to 98%+ accuracy with live word framing & spell check.",
+                image: signlensImg,
+                link: "https://huggingface.co/spaces/venmugilrajan/SignLens",
+                github: "https://github.com/venmugilrajan/Sign_lang",
+                tags: ["#MediaPipe", "#ComputerVision", "#HuggingFace", "#Python", "#ASL", "#ISL"]
               },
               {
                 title: "Diabetic Retinopathy Classification",
@@ -705,32 +707,8 @@ const App = () => {
             animate="visible"
             className="max-w-7xl mx-auto px-6 md:px-20 py-10 relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-8"
           >
-            {/* LeetCode Profile Widget Card */}
-            <motion.a 
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              href="https://leetcode.com/u/Venmugilrajans/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-            className="bg-[#0c0c0c] border border-white/20 rounded-tr-[2.5rem] rounded-bl-[2.5rem] p-5 md:p-8 flex flex-col justify-between items-center shadow-2xl min-h-[360px] md:h-[400px] hover:border-violet-500/50 transition-all duration-300 cursor-pointer block hover:scale-[1.01]"
-            >
-              <div className="w-full flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-500 font-black">L</div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white leading-tight">Venmugilrajans</h4>
-                    <span className="text-[10px] text-white/40">LeetCode Profile</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full h-[200px] rounded-xl overflow-hidden bg-white/[0.03] border border-white/10 flex items-center justify-center mb-4">
-                <img src={leetcodeStatsImg} className="w-full h-full object-contain" alt="Leetcode Profile Statistics" />
-              </div>
-              
-              <span className="text-xs font-black text-white/80 uppercase tracking-wider mt-4 hover:underline">
-                View Live Profile →
-              </span>
-            </motion.a>
+            {/* LeetCode Profile Dynamic Widget Card */}
+            <LeetCodeCard />
 
             {/* Java SE 17 Developer – Oracle */}
             <motion.a 
@@ -906,11 +884,13 @@ const App = () => {
 
               <ParallaxSection 
                 number="05"
-                title="Placement Predictor ML"
-                subtitle="A machine learning based placement predictor that evaluates CGPA, aptitude score, and projects to determine placement likelihood."
-                image={placementPredictionImg}
+                title="SignLens (Sign Language)"
+                subtitle="Real-time American & Indian Sign Language translator leveraging MediaPipe 3D hand landmarks, neural network classification, and live sentence framing."
+                image={signlensImg}
                 speed={0.1}
-                link="https://github.com/venmugilrajan/Placement_prediction"
+                link="https://huggingface.co/spaces/venmugilrajan/SignLens"
+                githubLink="https://github.com/venmugilrajan/Sign_lang"
+                buttonLabel="TRY LIVE DEMO"
               />
 
               <div className="flex justify-center py-20 relative z-20">
@@ -1146,7 +1126,7 @@ const PinnedSection = ({ title, description, image, reverse = false }) => {
   );
 };
 
-const ParallaxSection = ({ id, number, title, subtitle, image, speed, link = "#", reverse = false, objectPosition = "center", buttonLabel = "VIEW REPO" }) => {
+const ParallaxSection = ({ id, number, title, subtitle, image, speed, link = "#", githubLink, reverse = false, objectPosition = "center", buttonLabel = "VIEW REPO" }) => {
   const sectionRef = useRef(null);
 
   return (
@@ -1155,17 +1135,32 @@ const ParallaxSection = ({ id, number, title, subtitle, image, speed, link = "#"
         <span className="text-6xl md:text-8xl font-black opacity-10 leading-none block mb-6 font-mono">{number}</span>
         <h2 className="text-4xl sm:text-5xl md:text-8xl font-black mb-8 tracking-tighter leading-none">{title}</h2>
         <p className="text-base sm:text-lg md:text-2xl text-white/80 mb-12 max-w-md font-light leading-relaxed">{subtitle}</p>
-        <Magnetic>
-          <a 
-            href={link} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-6 group cursor-pointer border border-white/20 px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-500"
-          >
-            <span className="text-sm font-black tracking-[0.2em] uppercase">{buttonLabel}</span>
-            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-          </a>
-        </Magnetic>
+        <div className="flex flex-wrap items-center gap-4">
+          <Magnetic>
+            <a 
+              href={link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-6 group cursor-pointer border border-white/20 px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-500"
+            >
+              <span className="text-sm font-black tracking-[0.2em] uppercase">{buttonLabel}</span>
+              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </a>
+          </Magnetic>
+          {githubLink && (
+            <Magnetic>
+              <a 
+                href={githubLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="GitHub Repository"
+                className="inline-flex items-center gap-3 group cursor-pointer border border-white/20 p-4 rounded-full hover:bg-white hover:text-black transition-all duration-500 text-white/80 hover:text-black"
+              >
+                <Github size={20} />
+              </a>
+            </Magnetic>
+          )}
+        </div>
       </div>
       <div className="w-full md:w-7/12 flex items-center justify-center">
         <TiltedCard
