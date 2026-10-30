@@ -22,6 +22,7 @@ import ociCertImg from './oci_cert.png';
 import awsCertImg from './aws_cert.png';
 import cscCertImg from './csc_cert.png';
 import LeetCodeCard from './LeetCodeCard';
+import ProjectsPage from './ProjectsPage';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -227,11 +228,16 @@ const App = () => {
   const [forceFlipped, setForceFlipped] = useState(false);
 
   // Navigate to a view AND push the correct URL
-  const navigateTo = (newView, target = null) => {
+    const navigateTo = (newView, target = null) => {
     const pathMap = { home: '/', projects: '/projects', feats: '/feats' };
     const newPath = pathMap[newView] || '/';
     window.history.pushState({ view: newView }, '', newPath);
-    if (target) setScrollTarget(target);
+    if (target) {
+      setScrollTarget(target);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (window.lenis) window.lenis.scrollTo(0, { immediate: true });
+    }
     setView(newView);
   };
 
@@ -539,134 +545,16 @@ const App = () => {
         {view === 'projects' ? (
           <motion.main
             key="projects"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="relative z-10 pt-32 min-h-screen flex flex-col justify-between"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10"
           >
-          {/* Back to Home Button */}
-          <div className="max-w-7xl mx-auto px-6 md:px-20 mb-6 w-full relative z-20">
-            <Magnetic strength={0.2}>
-              <button 
-                onClick={() => navigateTo('home')} 
-                className="inline-flex items-center gap-4 text-white/60 hover:text-white transition-colors text-sm font-bold tracking-[0.2em] uppercase cursor-pointer"
-              >
-                <ArrowRight size={18} className="rotate-180" /> BACK TO HOME
-              </button>
-            </Magnetic>
-          </div>
-
-          {/* Heading with WORK outline background */}
-          <div className="relative w-full overflow-hidden py-4 md:py-6 flex flex-col items-center gap-6">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
-              <h2 className="text-[18vw] font-black opacity-[0.12] tracking-tighter leading-none" style={{ WebkitTextStroke: "1.5px rgba(255,255,255,0.25)", color: "transparent" }}>WORK</h2>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-center tracking-tighter uppercase relative z-10 px-4">ALL PROJECTS</h1>
-            
-            {/* Control buttons for flipping card views */}
-            <div className="flex gap-4 relative z-20">
-              <button 
-                onClick={() => setForceFlipped(false)}
-                className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
-                  !forceFlipped 
-                    ? 'bg-white text-black border-white shadow-lg shadow-white/10' 
-                    : 'bg-transparent text-white/60 border-white/20 hover:text-white hover:border-white/40'
-                }`}
-              >
-                Show Normal
-              </button>
-              <button 
-                onClick={() => setForceFlipped(true)}
-                className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
-                  forceFlipped 
-                    ? 'bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-600/30' 
-                    : 'bg-transparent text-white/60 border-white/20 hover:text-white hover:border-white/40'
-                }`}
-              >
-                Rotate / Details
-              </button>
-            </div>
-          </div>
-
-          {/* Horizontal scroll cards wrapper — supports mouse drag on desktop, touch swipe on mobile */}
-          <div ref={setProjectsContainer} data-lenis-prevent className="w-full flex overflow-x-auto gap-5 md:gap-8 py-8 md:py-10 px-4 md:px-20 no-scrollbar snap-x snap-mandatory relative z-10 select-none cursor-grab active:cursor-grabbing projects-slider-drag">
-            {[
-              {
-                title: "Online Leave Portal",
-                description: "Full-stack portal for student-teacher leave management with PHP/MySQL backend.",
-                image: "https://images.unsplash.com/photo-1484417894907-623942c8ee29?auto=format&fit=crop&q=80&w=2000",
-                link: "https://github.com/venmugilrajan",
-                tags: ["#PHP", "#MySQL", "#HTML5", "#CSS3"]
-              },
-              {
-                title: "Emotion Recognition CNN",
-                description: "Deep learning application using Convolutional Neural Networks for real-time emotion identification.",
-                image: faceImg,
-                link: "https://github.com/venmugilrajan/Emotion_Rec",
-                tags: ["#Python", "#CNN", "#TensorFlow", "#OpenCV"]
-              },
-              {
-                title: "Digit Recognizer",
-                description: "Machine learning interface powered by CNN to accurately identify handwritten digits.",
-                image: digitImg,
-                link: "https://github.com/venmugilrajan/DIGIT_RECOGNIZER_CNN",
-                tags: ["#MachineLearning", "#CNN", "#Python", "#Keras"]
-              },
-              {
-                title: "Student Reward Site",
-                description: "A comprehensive platform designed for tracking and managing student rewards and achievements.",
-                image: rewardImg,
-                link: "https://venmugilrajan-student-reward-points.hf.space/",
-                tags: ["#Gradio", "#Python", "#HFSpace"]
-              },
-              {
-                title: "Weather Prediction LSTM",
-                description: "A deep learning system using Long Short-Term Memory (LSTM) networks to forecast weather variables and patterns.",
-                image: weatherImg,
-                link: "https://github.com/venmugilrajan/WEATHER_PREDICTION_LSTM",
-                tags: ["#LSTM", "#RNN", "#TensorFlow", "#DataScience"]
-              },
-              {
-                title: "RepoGuard",
-                description: "A security utility for monitoring and guarding GitHub repositories against secret leaks, vulnerabilities, and unauthorized changes.",
-                image: repoGuardImg,
-                link: "https://github.com/venmugilrajan/RepoGuard",
-                tags: ["#Security", "#Git", "#Automation", "#Python"]
-              },
-              {
-                title: "SignLens (Sign Language AI)",
-                description: "Real-time ISL & ASL sign language translator powered by MediaPipe 3D hand landmarks (21 joints) and neural classifiers achieving up to 98%+ accuracy with live word framing & spell check.",
-                image: signlensImg,
-                link: "https://huggingface.co/spaces/venmugilrajan/SignLens",
-                github: "https://github.com/venmugilrajan/Sign_lang",
-                tags: ["#MediaPipe", "#ComputerVision", "#HuggingFace", "#Python", "#ASL", "#ISL"]
-              },
-              {
-                title: "Diabetic Retinopathy Classification",
-                description: "Fine-tuned EfficientNet-B3 model (PyTorch/timm) classifying diabetic retinopathy severity (72.5% accuracy, 0.72 F1). Integrates OpenCV pre-processing and Focal Loss, deployed on Hugging Face spaces.",
-                image: diabeticRetinopathyImg,
-                link: "https://huggingface.co/spaces/venmugilrajan/Diabetic_Retinopathy",
-                github: "https://github.com/venmugilrajan/Diabetic_Retinopathy",
-                tags: ["#PyTorch", "#timm", "#OpenCV", "#Gradio", "#HuggingFace", "#FocalLoss"]
-              }
-            ].map((proj, idx) => (
-              <ProjectCard key={idx} proj={proj} idx={idx} forceFlipped={forceFlipped} />
-            ))}
-          </div>
-
-          {/* Bottom Back to Home Button */}
-          <div className="max-w-7xl mx-auto px-6 md:px-20 py-10 flex justify-center relative z-20 w-full">
-            <Magnetic strength={0.3}>
-              <button 
-                onClick={() => navigateTo('home')} 
-                className="px-10 py-5 bg-white text-black font-black text-sm rounded-full hover:scale-105 transition-transform duration-300 flex items-center gap-4 cursor-pointer"
-              >
-                BACK TO HOME <ArrowRight size={18} className="rotate-180" />
-              </button>
-            </Magnetic>
-          </div>
-
+            <ProjectsPage 
+              navigateTo={navigateTo} 
+              onContactClick={() => setIsContactOpen(true)} 
+            />
             <Footer onSayHiClick={() => setIsContactOpen(true)} />
           </motion.main>
         ) : view === 'feats' ? (

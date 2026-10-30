@@ -7,7 +7,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Outfit', 'sans-serif'],
+                sans: ['Inter', 'Outfit', 'sans-serif'],
+                mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
             },
         },
     },
