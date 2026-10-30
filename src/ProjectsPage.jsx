@@ -35,18 +35,21 @@ import placementPredictionImg from './placement_prediction.png';
 // 1. SLEEK HIGH-TECH SIGNLENS HUD HERO
 // ==========================================
 
-// Topological Landmark Hand Coordinates for different ASL Gestures
-const GESTURE_DATASETS = {
-  "POINT_D": {
+// -------------------------------------------------------------
+// Interactive ASL Gesture Preset Library
+// -------------------------------------------------------------
+const GESTURE_PRESETS = {
+  POINT_D: {
     name: "POINT / SIGN 'D'",
-    label: "SIGN 'D'",
-    accuracy: 98.6,
+    badge: "INDEX EXTENDED",
+    conf: 98.6,
+    activeJoint: 8,
     landmarks: [
       { id: 0, name: "WRIST", x: 190, y: 310, z: 0.00, tip: false },
       { id: 1, name: "THUMB_CMC", x: 155, y: 285, z: 0.08, tip: false },
       { id: 2, name: "THUMB_MCP", x: 125, y: 245, z: 0.15, tip: false },
-      { id: 3, name: "THUMB_IP", x: 110, y: 205, z: 0.22, tip: false },
-      { id: 4, name: "THUMB_TIP", x: 135, y: 175, z: 0.31, tip: true },
+      { id: 3, name: "THUMB_IP", x: 115, y: 215, z: 0.22, tip: false },
+      { id: 4, name: "THUMB_TIP", x: 138, y: 190, z: 0.31, tip: true },
       { id: 5, name: "INDEX_MCP", x: 165, y: 195, z: 0.10, tip: false },
       { id: 6, name: "INDEX_PIP", x: 158, y: 145, z: 0.18, tip: false },
       { id: 7, name: "INDEX_DIP", x: 154, y: 105, z: 0.24, tip: false },
@@ -65,102 +68,91 @@ const GESTURE_DATASETS = {
       { id: 20, name: "PINKY_TIP", x: 246, y: 232, z: -0.31, tip: true },
     ]
   },
-  "PEACE_V": {
+  PEACE_V: {
     name: "PEACE / SIGN 'V'",
-    label: "SIGN 'V'",
-    accuracy: 99.1,
+    badge: "INDEX + MIDDLE",
+    conf: 99.2,
+    activeJoint: 12,
     landmarks: [
       { id: 0, name: "WRIST", x: 190, y: 310, z: 0.00, tip: false },
       { id: 1, name: "THUMB_CMC", x: 155, y: 285, z: 0.08, tip: false },
-      { id: 2, name: "THUMB_MCP", x: 130, y: 250, z: 0.15, tip: false },
-      { id: 3, name: "THUMB_IP", x: 135, y: 220, z: 0.22, tip: false },
-      { id: 4, name: "THUMB_TIP", x: 155, y: 205, z: 0.29, tip: true },
-      // Index extended pointing up-left
+      { id: 2, name: "THUMB_MCP", x: 125, y: 250, z: 0.15, tip: false },
+      { id: 3, name: "THUMB_IP", x: 120, y: 220, z: 0.22, tip: false },
+      { id: 4, name: "THUMB_TIP", x: 140, y: 205, z: 0.28, tip: true },
       { id: 5, name: "INDEX_MCP", x: 165, y: 195, z: 0.10, tip: false },
-      { id: 6, name: "INDEX_PIP", x: 150, y: 150, z: 0.16, tip: false },
-      { id: 7, name: "INDEX_DIP", x: 138, y: 105, z: 0.22, tip: false },
-      { id: 8, name: "INDEX_TIP", x: 125, y: 65, z: 0.30, tip: true },
-      // Middle extended pointing up-right
+      { id: 6, name: "INDEX_PIP", x: 150, y: 145, z: 0.18, tip: false },
+      { id: 7, name: "INDEX_DIP", x: 135, y: 100, z: 0.24, tip: false },
+      { id: 8, name: "INDEX_TIP", x: 120, y: 60, z: 0.32, tip: true },
       { id: 9, name: "MIDDLE_MCP", x: 195, y: 190, z: 0.05, tip: false },
-      { id: 10, name: "MIDDLE_PIP", x: 205, y: 145, z: 0.14, tip: false },
-      { id: 11, name: "MIDDLE_DIP", x: 215, y: 100, z: 0.20, tip: false },
-      { id: 12, name: "MIDDLE_TIP", x: 228, y: 60, z: 0.28, tip: true },
-      // Ring curled
+      { id: 10, name: "MIDDLE_PIP", x: 200, y: 140, z: 0.16, tip: false },
+      { id: 11, name: "MIDDLE_DIP", x: 205, y: 95, z: 0.22, tip: false },
+      { id: 12, name: "MIDDLE_TIP", x: 210, y: 55, z: 0.30, tip: true },
       { id: 13, name: "RING_MCP", x: 225, y: 200, z: 0.00, tip: false },
-      { id: 14, name: "RING_PIP", x: 228, y: 175, z: -0.15, tip: false },
-      { id: 15, name: "RING_DIP", x: 224, y: 195, z: -0.27, tip: false },
-      { id: 16, name: "RING_TIP", x: 218, y: 215, z: -0.32, tip: true },
-      // Pinky curled
+      { id: 14, name: "RING_PIP", x: 228, y: 172, z: -0.14, tip: false },
+      { id: 15, name: "RING_DIP", x: 224, y: 195, z: -0.26, tip: false },
+      { id: 16, name: "RING_TIP", x: 218, y: 215, z: -0.30, tip: true },
       { id: 17, name: "PINKY_MCP", x: 255, y: 220, z: -0.05, tip: false },
       { id: 18, name: "PINKY_PIP", x: 260, y: 195, z: -0.16, tip: false },
       { id: 19, name: "PINKY_DIP", x: 254, y: 215, z: -0.28, tip: false },
       { id: 20, name: "PINKY_TIP", x: 246, y: 232, z: -0.31, tip: true },
     ]
   },
-  "OPEN_PALM": {
-    name: "OPEN / FIVE '5'",
-    label: "OPEN PALM",
-    accuracy: 97.8,
+  OPEN_PALM: {
+    name: "OPEN PALM / 'FIVE'",
+    badge: "ALL SPREAD",
+    conf: 99.7,
+    activeJoint: 4,
     landmarks: [
-      { id: 0, name: "WRIST", x: 190, y: 310, z: 0.00, tip: false },
-      // Thumb splayed
-      { id: 1, name: "THUMB_CMC", x: 155, y: 285, z: 0.08, tip: false },
-      { id: 2, name: "THUMB_MCP", x: 125, y: 250, z: 0.15, tip: false },
-      { id: 3, name: "THUMB_IP", x: 95, y: 215, z: 0.20, tip: false },
-      { id: 4, name: "THUMB_TIP", x: 75, y: 180, z: 0.26, tip: true },
-      // Index straight up
-      { id: 5, name: "INDEX_MCP", x: 160, y: 195, z: 0.09, tip: false },
-      { id: 6, name: "INDEX_PIP", x: 150, y: 150, z: 0.14, tip: false },
-      { id: 7, name: "INDEX_DIP", x: 142, y: 105, z: 0.19, tip: false },
-      { id: 8, name: "INDEX_TIP", x: 135, y: 65, z: 0.25, tip: true },
-      // Middle straight up
-      { id: 9, name: "MIDDLE_MCP", x: 190, y: 190, z: 0.04, tip: false },
-      { id: 10, name: "MIDDLE_PIP", x: 188, y: 140, z: 0.11, tip: false },
-      { id: 11, name: "MIDDLE_DIP", x: 186, y: 92, z: 0.17, tip: false },
-      { id: 12, name: "MIDDLE_TIP", x: 185, y: 50, z: 0.23, tip: true },
-      // Ring straight up
-      { id: 13, name: "RING_MCP", x: 220, y: 198, z: 0.01, tip: false },
-      { id: 14, name: "RING_PIP", x: 224, y: 148, z: 0.08, tip: false },
-      { id: 15, name: "RING_DIP", x: 226, y: 104, z: 0.14, tip: false },
-      { id: 16, name: "RING_TIP", x: 228, y: 65, z: 0.20, tip: true },
-      // Pinky splayed
-      { id: 17, name: "PINKY_MCP", x: 250, y: 215, z: -0.04, tip: false },
-      { id: 18, name: "PINKY_PIP", x: 262, y: 170, z: 0.03, tip: false },
-      { id: 19, name: "PINKY_DIP", x: 272, y: 130, z: 0.09, tip: false },
-      { id: 20, name: "PINKY_TIP", x: 282, y: 95, z: 0.15, tip: true },
+      { id: 0, name: "WRIST", x: 190, y: 315, z: 0.00, tip: false },
+      { id: 1, name: "THUMB_CMC", x: 150, y: 280, z: 0.08, tip: false },
+      { id: 2, name: "THUMB_MCP", x: 115, y: 245, z: 0.15, tip: false },
+      { id: 3, name: "THUMB_IP", x: 85, y: 210, z: 0.22, tip: false },
+      { id: 4, name: "THUMB_TIP", x: 60, y: 180, z: 0.28, tip: true },
+      { id: 5, name: "INDEX_MCP", x: 165, y: 195, z: 0.10, tip: false },
+      { id: 6, name: "INDEX_PIP", x: 150, y: 145, z: 0.18, tip: false },
+      { id: 7, name: "INDEX_DIP", x: 135, y: 100, z: 0.24, tip: false },
+      { id: 8, name: "INDEX_TIP", x: 120, y: 60, z: 0.30, tip: true },
+      { id: 9, name: "MIDDLE_MCP", x: 195, y: 190, z: 0.05, tip: false },
+      { id: 10, name: "MIDDLE_PIP", x: 192, y: 135, z: 0.16, tip: false },
+      { id: 11, name: "MIDDLE_DIP", x: 190, y: 90, z: 0.22, tip: false },
+      { id: 12, name: "MIDDLE_TIP", x: 188, y: 48, z: 0.29, tip: true },
+      { id: 13, name: "RING_MCP", x: 225, y: 200, z: 0.00, tip: false },
+      { id: 14, name: "RING_PIP", x: 235, y: 145, z: 0.14, tip: false },
+      { id: 15, name: "RING_DIP", x: 245, y: 105, z: 0.20, tip: false },
+      { id: 16, name: "RING_TIP", x: 255, y: 70, z: 0.26, tip: true },
+      { id: 17, name: "PINKY_MCP", x: 255, y: 220, z: -0.05, tip: false },
+      { id: 18, name: "PINKY_PIP", x: 275, y: 175, z: 0.10, tip: false },
+      { id: 19, name: "PINKY_DIP", x: 290, y: 140, z: 0.16, tip: false },
+      { id: 20, name: "PINKY_TIP", x: 305, y: 110, z: 0.22, tip: true },
     ]
   },
-  "FIST_A": {
-    name: "FIST / SIGN 'A'",
-    label: "SIGN 'A'",
-    accuracy: 99.4,
+  THUMBS_UP: {
+    name: "THUMBS UP / 'GOOD'",
+    badge: "POSITIVE GESTURE",
+    conf: 97.9,
+    activeJoint: 4,
     landmarks: [
-      { id: 0, name: "WRIST", x: 190, y: 310, z: 0.00, tip: false },
-      // Thumb resting upright alongside index
-      { id: 1, name: "THUMB_CMC", x: 155, y: 285, z: 0.08, tip: false },
-      { id: 2, name: "THUMB_MCP", x: 132, y: 245, z: 0.16, tip: false },
-      { id: 3, name: "THUMB_IP", x: 130, y: 205, z: 0.24, tip: false },
-      { id: 4, name: "THUMB_TIP", x: 136, y: 168, z: 0.32, tip: true },
-      // Index curled tight
-      { id: 5, name: "INDEX_MCP", x: 165, y: 195, z: 0.08, tip: false },
-      { id: 6, name: "INDEX_PIP", x: 168, y: 168, z: -0.15, tip: false },
-      { id: 7, name: "INDEX_DIP", x: 165, y: 192, z: -0.28, tip: false },
-      { id: 8, name: "INDEX_TIP", x: 162, y: 212, z: -0.35, tip: true },
-      // Middle curled tight
-      { id: 9, name: "MIDDLE_MCP", x: 195, y: 190, z: 0.04, tip: false },
-      { id: 10, name: "MIDDLE_PIP", x: 198, y: 165, z: -0.16, tip: false },
-      { id: 11, name: "MIDDLE_DIP", x: 195, y: 190, z: -0.29, tip: false },
-      { id: 12, name: "MIDDLE_TIP", x: 192, y: 210, z: -0.36, tip: true },
-      // Ring curled tight
-      { id: 13, name: "RING_MCP", x: 225, y: 200, z: 0.00, tip: false },
-      { id: 14, name: "RING_PIP", x: 227, y: 172, z: -0.18, tip: false },
-      { id: 15, name: "RING_DIP", x: 224, y: 195, z: -0.30, tip: false },
-      { id: 16, name: "RING_TIP", x: 220, y: 215, z: -0.38, tip: true },
-      // Pinky curled tight
-      { id: 17, name: "PINKY_MCP", x: 255, y: 220, z: -0.05, tip: false },
-      { id: 18, name: "PINKY_PIP", x: 258, y: 195, z: -0.18, tip: false },
-      { id: 19, name: "PINKY_DIP", x: 252, y: 216, z: -0.30, tip: false },
-      { id: 20, name: "PINKY_TIP", x: 246, y: 232, z: -0.37, tip: true },
+      { id: 0, name: "WRIST", x: 200, y: 310, z: 0.00, tip: false },
+      { id: 1, name: "THUMB_CMC", x: 165, y: 270, z: 0.12, tip: false },
+      { id: 2, name: "THUMB_MCP", x: 150, y: 215, z: 0.24, tip: false },
+      { id: 3, name: "THUMB_IP", x: 152, y: 145, z: 0.35, tip: false },
+      { id: 4, name: "THUMB_TIP", x: 155, y: 80, z: 0.45, tip: true },
+      { id: 5, name: "INDEX_MCP", x: 190, y: 210, z: 0.05, tip: false },
+      { id: 6, name: "INDEX_PIP", x: 225, y: 215, z: -0.15, tip: false },
+      { id: 7, name: "INDEX_DIP", x: 240, y: 235, z: -0.25, tip: false },
+      { id: 8, name: "INDEX_TIP", x: 230, y: 250, z: -0.32, tip: true },
+      { id: 9, name: "MIDDLE_MCP", x: 195, y: 230, z: 0.00, tip: false },
+      { id: 10, name: "MIDDLE_PIP", x: 225, y: 240, z: -0.18, tip: false },
+      { id: 11, name: "MIDDLE_DIP", x: 238, y: 260, z: -0.28, tip: false },
+      { id: 12, name: "MIDDLE_TIP", x: 225, y: 275, z: -0.34, tip: true },
+      { id: 13, name: "RING_MCP", x: 195, y: 255, z: -0.05, tip: false },
+      { id: 14, name: "RING_PIP", x: 222, y: 265, z: -0.20, tip: false },
+      { id: 15, name: "RING_DIP", x: 232, y: 280, z: -0.30, tip: false },
+      { id: 16, name: "RING_TIP", x: 220, y: 292, z: -0.36, tip: true },
+      { id: 17, name: "PINKY_MCP", x: 195, y: 280, z: -0.10, tip: false },
+      { id: 18, name: "PINKY_PIP", x: 218, y: 288, z: -0.22, tip: false },
+      { id: 19, name: "PINKY_DIP", x: 226, y: 300, z: -0.32, tip: false },
+      { id: 20, name: "PINKY_TIP", x: 214, y: 308, z: -0.38, tip: true },
     ]
   }
 };
@@ -176,49 +168,83 @@ const BONE_CONNECTIONS = [
 
 const SignLensVisionHUD = () => {
   const [activeGestureKey, setActiveGestureKey] = useState("POINT_D");
-  const [selectedJoint, setSelectedJoint] = useState(8); // Default to Index Tip
+  const [selectedJoint, setSelectedJoint] = useState(8);
   const [isLive, setIsLive] = useState(true);
   const [fps, setFps] = useState(58.4);
   const [latency, setLatency] = useState(17.8);
   const [confidence, setConfidence] = useState(98.7);
   const [hoveredJoint, setHoveredJoint] = useState(null);
-  const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
+  const [smoothingFactor, setSmoothingFactor] = useState(0.7);
+  const [showMesh, setShowMesh] = useState(true);
+  const [showRays, setShowRays] = useState(true);
+  const [draggedNode, setDraggedNode] = useState(null);
+  const [customOffsets, setCustomOffsets] = useState({});
 
-  // Get active dataset
-  const activeDataset = GESTURE_DATASETS[activeGestureKey] || GESTURE_DATASETS["POINT_D"];
-  const currentLandmarks = activeDataset.landmarks;
+  const currentPreset = GESTURE_PRESETS[activeGestureKey];
 
-  // Live jitter/simulation effect to make it feel genuinely real-time
+  // Switch gesture preset
+  const handleSelectGesture = (key) => {
+    setActiveGestureKey(key);
+    setSelectedJoint(GESTURE_PRESETS[key].activeJoint);
+    setConfidence(GESTURE_PRESETS[key].conf);
+    setCustomOffsets({}); // reset dragged overrides
+  };
+
+  // Real-time jitter simulation to emulate live telemetry camera loop
   useEffect(() => {
     if (!isLive) return;
     const interval = setInterval(() => {
-      setLatency(+(16.8 + Math.random() * 2.1).toFixed(1));
-      setFps(+(58.0 + Math.random() * 1.5).toFixed(1));
-      setConfidence(+((activeDataset.accuracy - 0.4) + Math.random() * 0.8).toFixed(1));
-    }, 600);
+      setLatency(+(16.4 + Math.random() * 2.4).toFixed(1));
+      setFps(+(57.6 + Math.random() * 1.8).toFixed(1));
+      setConfidence(+(currentPreset.conf - 0.4 + Math.random() * 0.8).toFixed(1));
+    }, 650);
     return () => clearInterval(interval);
-  }, [isLive, activeDataset]);
+  }, [isLive, currentPreset]);
 
-  const activePoint = currentLandmarks[selectedJoint] || currentLandmarks[8];
+  // Compute final landmarks with any active drag offsets
+  const activeLandmarks = currentPreset.landmarks.map((pt) => {
+    const offset = customOffsets[pt.id] || { dx: 0, dy: 0 };
+    return {
+      ...pt,
+      x: pt.x + offset.dx,
+      y: pt.y + offset.dy,
+    };
+  });
 
-  // Optional 3D Parallax tilt on mouse move over the skeleton
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 16;
-    setMouseTilt({ x, y });
+  const activePoint = activeLandmarks[selectedJoint] || activeLandmarks[8];
+
+  // SVG Drag Handlers for node manipulation
+  const handleSvgMouseMove = (e) => {
+    if (draggedNode === null) return;
+    const svgRect = e.currentTarget.getBoundingClientRect();
+    const clientX = e.clientX - svgRect.left;
+    const clientY = e.clientY - svgRect.top;
+    
+    // Scale from element px to SVG 380x340 coordinate viewBox
+    const svgX = (clientX / svgRect.width) * 380;
+    const svgY = (clientY / svgRect.height) * 340;
+
+    const original = currentPreset.landmarks[draggedNode];
+    if (!original) return;
+
+    setCustomOffsets((prev) => ({
+      ...prev,
+      [draggedNode]: {
+        dx: Math.round(svgX - original.x),
+        dy: Math.round(svgY - original.y)
+      }
+    }));
   };
 
-  const handleMouseLeave = () => {
-    setMouseTilt({ x: 0, y: 0 });
-    setHoveredJoint(null);
+  const handleSvgMouseUp = () => {
+    setDraggedNode(null);
   };
 
   return (
-    <div className="relative w-full rounded-2xl border border-white/10 bg-[#0c0d12]/95 backdrop-blur-2xl p-5 md:p-6 shadow-2xl overflow-hidden font-mono text-xs">
+    <div className="relative w-full rounded-2xl border border-white/10 bg-[#0c0d12]/95 backdrop-blur-2xl p-5 md:p-6 shadow-2xl overflow-hidden font-mono text-xs select-none">
       {/* Background Precision Grid */}
       <div 
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        className="absolute inset-0 opacity-[0.07] pointer-events-none"
         style={{
           backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
           backgroundSize: '24px 24px'
@@ -238,42 +264,53 @@ const SignLensVisionHUD = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
+          <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded border border-white/5">
             <span className="text-emerald-400 font-bold">{fps} FPS</span>
             <span className="text-zinc-600">|</span>
             <span className="text-orange-400 font-bold">{latency} MS</span>
           </div>
+
           <button 
             onClick={() => setIsLive(!isLive)}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-colors cursor-pointer text-[10px]"
+            title={isLive ? "Pause continuous jitter stream" : "Resume stream"}
           >
             {isLive ? <Pause size={11} /> : <Play size={11} />}
             <span>{isLive ? "PAUSE" : "RESUME"}</span>
           </button>
+
+          {Object.keys(customOffsets).length > 0 && (
+            <button
+              onClick={() => setCustomOffsets({})}
+              className="flex items-center gap-1 px-2 py-1 rounded bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] cursor-pointer"
+              title="Reset dragged joints to original preset"
+            >
+              <RotateCcw size={10} />
+              <span>RESET RIG</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Gesture Selector Tabs (NEW INTERACTIVE FEATURE) */}
-      <div className="relative z-10 flex flex-wrap items-center gap-2 mb-4 pb-2 border-b border-white/[0.06]">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mr-1">
-          SAMPLE GESTURE:
+      {/* Interactive Preset Selector Ribbon */}
+      <div className="relative z-10 flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-white/[0.06]">
+        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mr-1">
+          GESTURE RIG:
         </span>
-        {Object.entries(GESTURE_DATASETS).map(([key, item]) => {
+        {Object.entries(GESTURE_PRESETS).map(([key, data]) => {
           const isActive = activeGestureKey === key;
           return (
             <button
               key={key}
-              onClick={() => {
-                setActiveGestureKey(key);
-                setConfidence(item.accuracy);
-              }}
-              className={`px-3 py-1 rounded-md text-[10.5px] font-mono transition-all cursor-pointer border ${
-                isActive
-                  ? "bg-orange-500/20 text-orange-400 border-orange-500/60 shadow-[0_0_12px_rgba(249,115,22,0.25)]"
-                  : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/25 hover:text-zinc-200"
+              onClick={() => handleSelectGesture(key)}
+              className={`px-2.5 py-1 rounded text-[10px] tracking-wide transition-all cursor-pointer font-medium flex items-center gap-1.5 ${
+                isActive 
+                  ? 'bg-orange-500 text-black font-bold shadow-md shadow-orange-500/20 scale-102' 
+                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 border border-white/[0.08] hover:text-white'
               }`}
             >
-              {item.label}
+              <span>{data.name.split('/')[0].trim()}</span>
+              {isActive && <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />}
             </button>
           );
         })}
@@ -282,27 +319,27 @@ const SignLensVisionHUD = () => {
       {/* Main HUD Body: 2 Columns */}
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
         
-        {/* Left Column: Interactive 21-Joint Skeletal Wireframe (SVG HUD with Parallax Tilt) */}
-        <div 
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className="md:col-span-7 relative flex items-center justify-center p-2 rounded-xl bg-black/40 border border-white/[0.06] transition-transform duration-200 ease-out"
-          style={{
-            transform: `perspective(700px) rotateY(${mouseTilt.x}deg) rotateX(${-mouseTilt.y}deg)`
-          }}
-        >
-          {/* Subtle Radar/Target Reticles */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-            <div className="w-48 h-48 rounded-full border border-orange-500/40 border-dashed animate-[spin_40s_linear_infinite]" />
+        {/* Left Column: Interactive 21-Joint Skeletal Wireframe (SVG HUD) */}
+        <div className="md:col-span-7 relative flex flex-col items-center justify-center p-2 rounded-xl bg-black/50 border border-white/[0.08] overflow-hidden">
+          
+          {/* Subtle Radar & Coordinate Reticles */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-25">
+            <div className="w-52 h-52 rounded-full border border-orange-500/30 border-dashed animate-[spin_50s_linear_infinite]" />
             <div className="absolute w-64 h-64 rounded-full border border-sky-500/20" />
-            <Crosshair size={32} className="text-orange-500/40" />
+            <Crosshair size={36} className="text-orange-500/30" />
           </div>
 
-          <svg viewBox="0 0 380 340" className="w-full h-auto max-h-[300px] drop-shadow-2xl select-none">
+          <svg 
+            viewBox="0 0 380 340" 
+            className="w-full h-auto max-h-[300px] drop-shadow-2xl cursor-crosshair"
+            onMouseMove={handleSvgMouseMove}
+            onMouseUp={handleSvgMouseUp}
+            onMouseLeave={handleSvgMouseUp}
+          >
             {/* Skeletal Vector Bones */}
             {BONE_CONNECTIONS.map(([start, end], idx) => {
-              const p1 = currentLandmarks[start];
-              const p2 = currentLandmarks[end];
+              const p1 = activeLandmarks[start];
+              const p2 = activeLandmarks[end];
               const isHighlight = selectedJoint === start || selectedJoint === end;
               return (
                 <line
@@ -314,22 +351,46 @@ const SignLensVisionHUD = () => {
                   stroke={isHighlight ? "#f97316" : "rgba(56, 189, 248, 0.45)"}
                   strokeWidth={isHighlight ? "2.5" : "1.8"}
                   strokeLinecap="round"
-                  className="transition-all duration-300"
                 />
               );
             })}
 
             {/* Connecting bounding hull polygon around palm */}
-            <polygon 
-              points={`${currentLandmarks[0].x},${currentLandmarks[0].y} ${currentLandmarks[1].x},${currentLandmarks[1].y} ${currentLandmarks[5].x},${currentLandmarks[5].y} ${currentLandmarks[17].x},${currentLandmarks[17].y}`}
-              fill="rgba(56, 189, 248, 0.05)"
-              stroke="rgba(56, 189, 248, 0.2)"
-              strokeDasharray="3 3"
-              className="transition-all duration-300"
-            />
+            {showMesh && (
+              <polygon 
+                points={`${activeLandmarks[0].x},${activeLandmarks[0].y} ${activeLandmarks[1].x},${activeLandmarks[1].y} ${activeLandmarks[5].x},${activeLandmarks[5].y} ${activeLandmarks[17].x},${activeLandmarks[17].y}`}
+                fill="rgba(56, 189, 248, 0.06)"
+                stroke="rgba(56, 189, 248, 0.25)"
+                strokeDasharray="3 3"
+              />
+            )}
+
+            {/* Projection Rays to active selected landmark */}
+            {showRays && (
+              <g className="pointer-events-none opacity-40">
+                <line 
+                  x1={activePoint.x} 
+                  y1={0} 
+                  x2={activePoint.x} 
+                  y2={340} 
+                  stroke="#f97316" 
+                  strokeWidth="0.8" 
+                  strokeDasharray="2 4"
+                />
+                <line 
+                  x1={0} 
+                  y1={activePoint.y} 
+                  x2={380} 
+                  y2={activePoint.y} 
+                  stroke="#f97316" 
+                  strokeWidth="0.8" 
+                  strokeDasharray="2 4"
+                />
+              </g>
+            )}
 
             {/* 21 Landmark Nodes */}
-            {currentLandmarks.map((pt) => {
+            {activeLandmarks.map((pt) => {
               const isSelected = selectedJoint === pt.id;
               const isHovered = hoveredJoint === pt.id;
 
@@ -337,18 +398,22 @@ const SignLensVisionHUD = () => {
                 <g 
                   key={pt.id} 
                   className="cursor-pointer"
-                  onClick={() => setSelectedJoint(pt.id)}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    setSelectedJoint(pt.id);
+                    setDraggedNode(pt.id);
+                  }}
                   onMouseEnter={() => setHoveredJoint(pt.id)}
                   onMouseLeave={() => setHoveredJoint(null)}
                 >
-                  {/* Outer Pulsing Target Halo if Selected or Hovered */}
-                  {(isSelected || isHovered) && (
+                  {/* Outer Pulsing Target Halo if Selected */}
+                  {isSelected && (
                     <circle
                       cx={pt.x}
                       cy={pt.y}
                       r="13"
                       fill="none"
-                      stroke={isSelected ? "#f97316" : "#38bdf8"}
+                      stroke="#f97316"
                       strokeWidth="1.5"
                       strokeDasharray="3 3"
                       className="animate-spin"
@@ -359,11 +424,10 @@ const SignLensVisionHUD = () => {
                   <circle
                     cx={pt.x}
                     cy={pt.y}
-                    r={isSelected ? "6.5" : pt.tip ? "5.5" : "4"}
+                    r={isSelected ? "6.5" : isHovered ? "6" : pt.tip ? "5.5" : "4"}
                     fill={isSelected ? "#f97316" : pt.tip ? "#38bdf8" : "#94a3b8"}
-                    stroke={isSelected ? "#fff" : "#0c0d12"}
-                    strokeWidth="1.5"
-                    className="transition-all duration-300 hover:scale-125"
+                    stroke={isSelected ? "#fff" : isHovered ? "#38bdf8" : "#0c0d12"}
+                    strokeWidth={isSelected || isHovered ? "2" : "1.5"}
                   />
 
                   {/* Small ID tag next to tips */}
@@ -383,10 +447,31 @@ const SignLensVisionHUD = () => {
             })}
           </svg>
 
-          {/* Interactive Tap Helper Badge */}
-          <div className="absolute bottom-2 left-3 flex items-center gap-1.5 text-[9px] text-zinc-500 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-            <span>CLICK ANY OF THE 21 NODES TO LOCK COORDINATES</span>
+          {/* Quick HUD Overlay Toggles */}
+          <div className="w-full flex items-center justify-between px-2 pt-2 border-t border-white/[0.04] text-[9px] text-zinc-400">
+            <span className="text-zinc-500 hidden sm:inline">
+              CLICK OR DRAG ANY NODE TO TEST KINEMATICS
+            </span>
+            <div className="flex items-center gap-3 ml-auto">
+              <label className="flex items-center gap-1 cursor-pointer hover:text-white">
+                <input 
+                  type="checkbox" 
+                  checked={showMesh} 
+                  onChange={(e) => setShowMesh(e.target.checked)}
+                  className="rounded accent-orange-500 w-3 h-3 cursor-pointer"
+                />
+                <span>PALM MESH</span>
+              </label>
+              <label className="flex items-center gap-1 cursor-pointer hover:text-white">
+                <input 
+                  type="checkbox" 
+                  checked={showRays} 
+                  onChange={(e) => setShowRays(e.target.checked)}
+                  className="rounded accent-orange-500 w-3 h-3 cursor-pointer"
+                />
+                <span>PROJECTION RAYS</span>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -396,29 +481,30 @@ const SignLensVisionHUD = () => {
           {/* Selected Joint Telemetry Box */}
           <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-2">
             <div className="flex items-center justify-between text-[10px] text-zinc-400">
-              <span className="text-orange-400 font-bold uppercase tracking-wider">
+              <span className="text-orange-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Crosshair size={12} className="text-orange-500" />
                 NODE #{activePoint.id} · {activePoint.name}
               </span>
               <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-bold">
-                LOCKED
+                TRACKED
               </span>
             </div>
 
             {/* Coordinate Triplet Stream */}
             <div className="grid grid-cols-3 gap-2 pt-1">
-              <div className="p-2 rounded bg-black/50 border border-white/5 text-center">
+              <div className="p-2 rounded bg-black/60 border border-white/5 text-center">
                 <div className="text-[8.5px] text-zinc-500">X_NORM</div>
                 <div className="text-[11px] font-bold text-white font-mono">
                   {(activePoint.x / 380).toFixed(4)}
                 </div>
               </div>
-              <div className="p-2 rounded bg-black/50 border border-white/5 text-center">
+              <div className="p-2 rounded bg-black/60 border border-white/5 text-center">
                 <div className="text-[8.5px] text-zinc-500">Y_NORM</div>
                 <div className="text-[11px] font-bold text-white font-mono">
                   {(activePoint.y / 340).toFixed(4)}
                 </div>
               </div>
-              <div className="p-2 rounded bg-black/50 border border-white/5 text-center">
+              <div className="p-2 rounded bg-black/60 border border-white/5 text-center">
                 <div className="text-[8.5px] text-zinc-500">Z_DEPTH</div>
                 <div className="text-[11px] font-bold text-orange-400 font-mono">
                   {activePoint.z >= 0 ? `+${activePoint.z.toFixed(2)}` : activePoint.z.toFixed(2)}
@@ -434,25 +520,37 @@ const SignLensVisionHUD = () => {
               <span className="text-orange-400 font-bold">{confidence}% CONF</span>
             </div>
             <div className="text-base font-black text-white tracking-tight flex items-center justify-between">
-              <span>{activeDataset.name}</span>
+              <span>{currentPreset.name}</span>
               <CheckCircle2 size={16} className="text-emerald-400" />
             </div>
-            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden mt-1">
-              <div style={{ width: `${confidence}%` }} className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-300" />
+            <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden mt-1">
+              <div 
+                style={{ width: `${confidence}%` }} 
+                className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-300" 
+              />
             </div>
           </div>
 
-          {/* Quick Benchmark Footnote */}
-          <div className="text-[10px] text-zinc-400 space-y-1 pt-1">
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-zinc-500">Temporal Smoothing:</span>
-              <span className="text-zinc-300 font-bold">Exponential Moving Avg (α=0.7)</span>
+          {/* Interactive Smoothing Slider & Benchmark Footnote */}
+          <div className="text-[10px] text-zinc-400 space-y-2 pt-1 bg-black/30 p-2.5 rounded-lg border border-white/[0.04]">
+            <div className="flex items-center justify-between">
+              <span className="text-zinc-400">Smoothing Factor (α):</span>
+              <span className="text-orange-400 font-bold font-mono">{smoothingFactor}</span>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-zinc-500">Wrist Orientation Scaling:</span>
-              <span className="text-emerald-400 font-bold">Enabled (Zero Invariant)</span>
+            <input 
+              type="range" 
+              min="0.1" 
+              max="0.95" 
+              step="0.05"
+              value={smoothingFactor}
+              onChange={(e) => setSmoothingFactor(parseFloat(e.target.value))}
+              className="w-full accent-orange-500 h-1 bg-white/10 rounded cursor-pointer"
+            />
+            <div className="flex justify-between border-t border-white/5 pt-1.5 text-[9.5px]">
+              <span className="text-zinc-500">Wrist Scaling:</span>
+              <span className="text-emerald-400 font-bold">Zero Invariant</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between text-[9.5px]">
               <span className="text-zinc-500">Hardware Profile:</span>
               <span className="text-zinc-300">Consumer CPU (No CUDA)</span>
             </div>
